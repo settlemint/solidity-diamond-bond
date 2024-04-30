@@ -16,9 +16,30 @@ docs/
 # Subgraphs
 deployment.txt
 deployment-anvil.txt
+selectors-bond.txt
+selectors-erc1155.txt
+selectors-loupe.txt
+selectors-ownership.txt
 subgraph/subgraph.config.json
 subgraph/node_modules
 subgraph/generated
 subgraph/build
 
 .pnpm
+node_modules
+.env
+
+# Hardhat files
+/cache
+/artifacts
+
+# TypeChain files
+/typechain
+/typechain-types
+
+# solidity-coverage files
+/coverage
+/coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337

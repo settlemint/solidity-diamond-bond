@@ -1,0 +1,52 @@
+  - kind: ethereum/contract
+    name: {id}
+    network: {chain}
+    source:
+      address: "{address}"
+      abi: BondFacet
+      startBlock: {startBlock}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - BondFacet
+      abis:
+        - name: BondFacet
+          file: {root}/../out/BondFacet.sol/BondFacet.json
+      eventHandlers:
+        - event: BondInitialized(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleBondInitialized
+        - event: BondParametersEdited(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleBondParametersEdited
+        - event: CouponsComputed(uint256,uint256[],uint256[],uint256[],uint256[],uint256[])
+          handler: handleCouponsComputed
+        - event: BondIssued(uint256,uint256,uint256)
+          handler: handleBondIssued
+        - event: BondsWithdrawn(string,uint256,address,uint256)
+          handler: handleBondsWithdrawn
+        - event: BalloonRateSet(uint256,uint256,uint256)
+          handler: handleBalloonRateSet
+        - event: GracePeriodSet(uint256,uint256)
+          handler: handleGracePeriodSet
+        - event: CapitalAmortizationFreePeriodSet(uint256,uint256)
+          handler: handleCapitalAmortizationFreePeriodSet
+        - event: InvestorsCountChanged(uint256,uint256)
+          handler: handleInvestorsCountChanged
+        - event: CampaignStartAndEndDateSet(uint256,uint256,uint256)
+          handler: handleCampaignStartAndEndDateSet
+        - event: CampaignPaused(uint256)
+          handler: handleCampaignPaused
+        - event: CampaignUnpaused(uint256)
+          handler: handleCampaignUnpaused
+        - event: MinAndMaxAmountSet(uint256,uint256,uint256,uint256)
+          handler: handleMinAndMaxAmountSet
+        - event: IssueDateSet(uint256,uint256)
+          handler: handleIssueDateSet
+        - event: BondTransferred(string,uint256,address,address,uint256)
+          handler: handleBondTransferred
+        - event: ReservedAmountChanged(uint256,uint256)
+          handler: handleReservedAmountChanged
+        - event: CouponStatusChanged(uint256,uint256)
+          handler: handleCouponStatusChanged
+      file: {file}

@@ -1,0 +1,18 @@
+{
+  "output": "generated/solidity-diamond-bond.",
+  "chain": "localhost",
+  "datasources": [
+    {
+      "name": "BondFacet",
+      "address": "0x0000000000000000000000000000000000000000",
+      "startBlock": 0,
+      "module": ["diamond"]
+    },
+    {
+      "name": "GenericToken",
+      "address": "0x0000000000000000000000000000000000000000",
+      "startBlock": 0,
+      "module": ["erc20", "pausable", "accesscontrol"]
+    }
+  ]
+}
