@@ -35,7 +35,7 @@ deploy-btp:
 	else \
 		echo "\033[1;33mWARNING: No keys are activated on the node, falling back to interactive mode...\033[0m"; \
 		echo ""; \
-		args="--interactive"; \
+		args="--interactives 1 --broadcast"; \
 	fi; \
 	if [ ! -z "$${BTP_GAS_PRICE}" ]; then \
 		args="$$args --gas-price $${BTP_GAS_PRICE}"; \
