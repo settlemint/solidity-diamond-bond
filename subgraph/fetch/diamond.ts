@@ -5,7 +5,7 @@ import {
   CouponList,
   Holder,
   Transfer,
-} from '../generated/schema';
+} from '../../generated/schema';
 import { fetchAccount } from './account';
 
 export function fetchBondFacet(

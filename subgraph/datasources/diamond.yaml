@@ -13,7 +13,7 @@
         - BondFacet
       abis:
         - name: BondFacet
-          file: {root}/../out/BondFacet.sol/BondFacet.json
+          file: {root}/out/BondFacet.sol/BondFacet.json
       eventHandlers:
         - event: BondInitialized(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleBondInitialized

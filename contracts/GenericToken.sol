@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 // SettleMint.com
 
-pragma solidity ^0.8.9;
+pragma solidity 0.8.26;
 
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 /**
  * @title GenericToken
@@ -22,7 +22,10 @@ import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
  *  deploying this contract.
  */
 contract GenericToken is ERC20, ERC20Burnable {
-    constructor(string memory name_, string memory symbol_) ERC20(name_, symbol_) {
+    constructor(
+        string memory name_,
+        string memory symbol_
+    ) ERC20(name_, symbol_) {
         _mint(msg.sender, 1_000_000 * 10 ** decimals());
     }
 
@@ -57,7 +60,11 @@ contract GenericToken is ERC20, ERC20Burnable {
      * - when `to` is zero, `amount` of `from`'s tokens will be burned.
      * - `from` and `to` are never both zero.
      */
-    function _update(address from, address to, uint256 amount) internal override {
+    function _update(
+        address from,
+        address to,
+        uint256 amount
+    ) internal override {
         super._update(from, to, amount);
     }
 }

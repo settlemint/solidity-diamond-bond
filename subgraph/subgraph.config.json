@@ -1,5 +1,5 @@
 {
-  "output": "generated/solidity-diamond-bond.",
+  "output": "generated/scs.",
   "chain": "localhost",
   "datasources": [
     {

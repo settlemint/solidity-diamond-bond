@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity 0.8.26;
 
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
-import "../src/facets/BondFacet.sol";
-import "../src/facets/ERC1155Facet.sol";
-import "../src/facets/DiamondCutFacet.sol";
-import "../src/facets/DiamondLoupeFacet.sol";
-import "../src/Diamond.sol";
-import "../src/upgradeInitializers/DiamondInit.sol";
-import {IDiamondCut} from "../src/interfaces/IDiamondCut.sol";
-import {BondInitParams} from "../src/libraries/StructBondInit.sol";
-import "../src/interfaces/IDiamond.sol";
+import "../contracts/facets/BondFacet.sol";
+import "../contracts/facets/ERC1155Facet.sol";
+import "../contracts/facets/DiamondCutFacet.sol";
+import "../contracts/facets/DiamondLoupeFacet.sol";
+import "../contracts/Diamond.sol";
+import "../contracts/upgradeInitializers/DiamondInit.sol";
+import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
+import {BondInitParams} from "../contracts/libraries/StructBondInit.sol";
+import "../contracts/interfaces/IDiamond.sol";
 
 contract DiamondBondTest is Test {
     address ownership;

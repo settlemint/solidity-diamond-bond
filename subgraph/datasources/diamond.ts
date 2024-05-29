@@ -19,7 +19,7 @@ import {
   BondTransferred as BondTransferredEvent,
   ReservedAmountChanged as ReservedAmountChangedEvent,
   CouponStatusChanged as CouponStatusChangedEvent,
-} from '../generated/diamond/BondFacet';
+} from '../../generated/diamond/BondFacet';
 import {
   BalloonRateSet,
   BondInitialized,
@@ -39,7 +39,7 @@ import {
   BondTransferred,
   ReservedAmountChanged,
   CouponStatusChanged,
-} from '../generated/schema';
+} from '../../generated/schema';
 import {
   fetchBond,
   fetchBondFacet,

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity 0.8.26;
 
 import {ERC1155Facet} from "./ERC1155Facet.sol";
 import "prb-math/UD60x18.sol";
