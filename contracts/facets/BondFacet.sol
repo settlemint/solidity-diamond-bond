@@ -14,13 +14,17 @@ contract BondFacet is BondStorage {
     address private __currencyAddress;
 
     // Events
-    event BondInitialized(
+    event BondInitializedPart1(
         uint256 bondId,
         uint256 coupure,
         uint256 interestNum,
         uint256 interestDen,
         uint256 withholdingTaxNum,
-        uint256 withholdingTaxDen,
+        uint256 withholdingTaxDen
+    );
+
+    event BondInitializedPart2(
+        uint256 bondId,
         uint256 periodicInterestRate,
         uint256 netReturn,
         uint256 periodicity,
@@ -36,13 +40,18 @@ contract BondFacet is BondStorage {
         uint256 maxAmount,
         uint256 maxAmountPerInvestor
     );
-    event BondParametersEdited(
+
+    event BondParametersEditedPart1(
         uint256 bondId,
         uint256 coupure,
         uint256 interestNum,
         uint256 interestDen,
         uint256 withholdingTaxNum,
-        uint256 withholdingTaxDen,
+        uint256 withholdingTaxDen
+    );
+
+    event BondParametersEditedPart2(
+        uint256 bondId,
         uint256 periodicInterestRate,
         uint256 netReturn,
         uint256 periodicity,
@@ -717,40 +726,24 @@ contract BondFacet is BondStorage {
         }
         setParameters(bi, false);
         _bondDetails.__initDone = true;
-
-        if (ud60x18(_bondDetails.__periodicInterestRate) < ud60x18(1)) {
-            emit BondInitialized(
-                bi.__bondId,
-                bi.__coupure,
-                bi.__interestNum,
-                bi.__interestDen,
-                bi.__withholdingTaxNum,
-                bi.__withholdingTaxDen,
-                _bondDetails.__periodicInterestRate,
-                _bondDetails.__netReturn,
-                bi.__periodicity,
-                bi.__duration,
-                bi.__methodOfRepayment,
-                _bondDetails.__maxSupply,
-                uint256(_bondDetails.__formOfFinancing)
-            );
-        } else {
-            emit BondInitialized(
-                bi.__bondId,
-                bi.__coupure,
-                bi.__interestNum,
-                bi.__interestDen,
-                bi.__withholdingTaxNum,
-                bi.__withholdingTaxDen,
-                _bondDetails.__periodicInterestRate,
-                _bondDetails.__netReturn,
-                bi.__periodicity,
-                bi.__duration,
-                bi.__methodOfRepayment,
-                _bondDetails.__maxSupply,
-                uint256(_bondDetails.__formOfFinancing)
-            );
-        }
+        emit BondInitializedPart1(
+            bi.__bondId,
+            bi.__coupure,
+            bi.__interestNum,
+            bi.__interestDen,
+            bi.__withholdingTaxNum,
+            bi.__withholdingTaxDen
+        );
+        emit BondInitializedPart2(
+            bi.__bondId,
+            _bondDetails.__periodicInterestRate,
+            _bondDetails.__netReturn,
+            bi.__periodicity,
+            bi.__duration,
+            bi.__methodOfRepayment,
+            _bondDetails.__maxSupply,
+            uint256(_bondDetails.__formOfFinancing)
+        );
         setCouponDatesFromIssueDate(bi.__bondId, bi.__expectedIssueDate);
         setCouponRates(bi.__bondId);
     }
@@ -773,39 +766,25 @@ contract BondFacet is BondStorage {
             _bondDetails.__campaignMaxAmount,
             _bondDetails.__maxAmountPerInvestor
         );
-        if (ud60x18(_bondDetails.__periodicInterestRate) < ud60x18(1)) {
-            emit BondParametersEdited(
-                bi.__bondId,
-                bi.__coupure,
-                bi.__interestNum,
-                bi.__interestDen,
-                bi.__withholdingTaxNum,
-                bi.__withholdingTaxDen,
-                _bondDetails.__periodicInterestRate,
-                _bondDetails.__netReturn,
-                bi.__periodicity,
-                bi.__duration,
-                bi.__methodOfRepayment,
-                _bondDetails.__maxSupply,
-                uint256(_bondDetails.__formOfFinancing)
-            );
-        } else {
-            emit BondParametersEdited(
-                bi.__bondId,
-                bi.__coupure,
-                bi.__interestNum,
-                bi.__interestDen,
-                bi.__withholdingTaxNum,
-                bi.__withholdingTaxDen,
-                _bondDetails.__periodicInterestRate,
-                _bondDetails.__netReturn,
-                bi.__periodicity,
-                bi.__duration,
-                bi.__methodOfRepayment,
-                _bondDetails.__maxSupply,
-                uint256(_bondDetails.__formOfFinancing)
-            );
-        }
+        emit BondParametersEditedPart1(
+            bi.__bondId,
+            bi.__coupure,
+            bi.__interestNum,
+            bi.__interestDen,
+            bi.__withholdingTaxNum,
+            bi.__withholdingTaxDen
+        );
+        emit BondParametersEditedPart2(
+            bi.__bondId,
+            _bondDetails.__periodicInterestRate,
+            _bondDetails.__netReturn,
+            bi.__periodicity,
+            bi.__duration,
+            bi.__methodOfRepayment,
+            _bondDetails.__maxSupply,
+            uint256(_bondDetails.__formOfFinancing)
+        );
+
         setCouponDatesFromIssueDate(bi.__bondId, bi.__expectedIssueDate);
         setCouponRates(bi.__bondId);
     }
