@@ -112,12 +112,12 @@
       },
       {
         "name": "BondParametersEditedPart1Event",
-        "type": "BondParametersPart1Edited!",
+        "type": "BondParametersEditedPart1!",
         "derived": "contract"
       },
       {
         "name": "BondParametersEditedPart2Event",
-        "type": "BondParametersPart2Edited!",
+        "type": "BondParametersEditedPart2!",
         "derived": "contract"
       },
       {
