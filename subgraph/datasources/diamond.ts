@@ -2,9 +2,11 @@ import { events, transactions } from '@amxx/graphprotocol-utils';
 import { BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts';
 import {
   BalloonRateSet as BalloonRateSetEvent,
-  BondInitialized as BondInitializedEvent,
+  BondInitializedPart1 as BondInitializedPart1Event,
+  BondInitializedPart2 as BondInitializedPart2Event,
   BondIssued as BondIssuedEvent,
-  BondParametersEdited as BondParametersEditedEvent,
+  BondParametersEditedPart1 as BondParametersEditedPart1Event,
+  BondParametersEditedPart2 as BondParametersEditedPart2Event,
   BondsWithdrawn as BondsWithdrawnEvent,
   CampaignPaused as CampaignPausedEvent,
   CampaignStartAndEndDateSet as CampaignStartAndEndDateSetEvent,
@@ -22,9 +24,11 @@ import {
 } from '../../generated/diamond/BondFacet';
 import {
   BalloonRateSet,
-  BondInitialized,
+  BondInitializedPart1,
+  BondInitializedPart2,
   BondIssued,
-  BondParametersEdited,
+  BondParametersEditedPart1,
+  BondParametersEditedPart2,
   BondsWithdrawn,
   CampaignPaused,
   CampaignStartAndEndDateSet,
@@ -50,9 +54,13 @@ import {
 
 const scale = BigDecimal.fromString('1000000000000000000');
 
-export function handleBondInitialized(event: BondInitializedEvent): void {
+export function handleBondInitializedPart1(
+  event: BondInitializedPart1Event
+): void {
   const contract = fetchBondFacet(event.address, '0');
-  const ev = new BondInitialized(events.id(event).concat('-bondInitialized'));
+  const ev = new BondInitializedPart1(
+    events.id(event).concat('-bondInitialized')
+  );
   ev.emitter = Bytes.fromHexString(contract.id);
   ev.transaction = transactions.log(event).id;
   ev.timestamp = event.block.timestamp;
@@ -61,14 +69,35 @@ export function handleBondInitialized(event: BondInitializedEvent): void {
   ev.coupure = event.params.coupure;
   ev.interestNum = BigDecimal.fromString(event.params.interestNum.toString());
   ev.interestDen = BigDecimal.fromString(event.params.interestDen.toString());
-  ev.periodicInterestRate = BigDecimal.fromString(
-    event.params.periodicInterestRate.toString()
-  );
   ev.withholdingTaxNum = BigDecimal.fromString(
     event.params.withholdingTaxNum.toString()
   );
   ev.withholdingTaxDen = BigDecimal.fromString(
     event.params.withholdingTaxDen.toString()
+  );
+
+  const bond = fetchBond(contract, event.params.bondId.toString());
+  bond.coupure = event.params.coupure;
+  bond.withholdingTaxRate = ev.withholdingTaxNum.div(ev.withholdingTaxDen);
+  bond.grossInterestRate = ev.interestNum.div(ev.interestDen);
+
+  bond.save();
+}
+export function handleBondInitializedPart2(
+  event: BondInitializedPart2Event
+): void {
+  const contract = fetchBondFacet(event.address, '0');
+  const ev = new BondInitializedPart2(
+    events.id(event).concat('-bondInitialized')
+  );
+  ev.emitter = Bytes.fromHexString(contract.id);
+  ev.transaction = transactions.log(event).id;
+  ev.timestamp = event.block.timestamp;
+  ev.contract = contract.id;
+  ev.bondId = event.params.bondId;
+
+  ev.periodicInterestRate = BigDecimal.fromString(
+    event.params.periodicInterestRate.toString()
   );
   ev.periodicity = event.params.periodicity;
   ev.methodOfRepayment = event.params.methodOfRepayment;
@@ -80,9 +109,6 @@ export function handleBondInitialized(event: BondInitializedEvent): void {
   );
 
   const bond = fetchBond(contract, event.params.bondId.toString());
-  bond.coupure = event.params.coupure;
-  bond.withholdingTaxRate = ev.withholdingTaxNum.div(ev.withholdingTaxDen);
-  bond.grossInterestRate = ev.interestNum.div(ev.interestDen);
   bond.netReturn = ev.netReturn.div(scale);
   bond.periodicInterestRate = ev.periodicInterestRate.div(scale);
   bond.duration = ev.duration;
@@ -118,12 +144,12 @@ export function handleBondInitialized(event: BondInitializedEvent): void {
   bond.save();
 }
 
-export function handleBondParametersEdited(
-  event: BondParametersEditedEvent
+export function handleBondParametersEditedPart1(
+  event: BondInitializedPart2Event
 ): void {
   const contract = fetchBondFacet(event.address, '0');
-  const ev = new BondParametersEdited(
-    events.id(event).concat('-bondParametersEdited')
+  const ev = new BondParametersEditedPart1(
+    events.id(event).concat('-bondInitialized')
   );
   ev.emitter = Bytes.fromHexString(contract.id);
   ev.transaction = transactions.log(event).id;
@@ -133,14 +159,35 @@ export function handleBondParametersEdited(
   ev.coupure = event.params.coupure;
   ev.interestNum = BigDecimal.fromString(event.params.interestNum.toString());
   ev.interestDen = BigDecimal.fromString(event.params.interestDen.toString());
-  ev.periodicInterestRate = BigDecimal.fromString(
-    event.params.periodicInterestRate.toString()
-  );
   ev.withholdingTaxNum = BigDecimal.fromString(
     event.params.withholdingTaxNum.toString()
   );
   ev.withholdingTaxDen = BigDecimal.fromString(
     event.params.withholdingTaxDen.toString()
+  );
+
+  const bond = fetchBond(contract, event.params.bondId.toString());
+  bond.coupure = event.params.coupure;
+  bond.withholdingTaxRate = ev.withholdingTaxNum.div(ev.withholdingTaxDen);
+  bond.grossInterestRate = ev.interestNum.div(ev.interestDen);
+
+  bond.save();
+}
+export function handleBondParametersEditedPart2(
+  event: BondParametersEditedPart2Event
+): void {
+  const contract = fetchBondFacet(event.address, '0');
+  const ev = new BondParametersEditedPart2(
+    events.id(event).concat('-bondInitialized')
+  );
+  ev.emitter = Bytes.fromHexString(contract.id);
+  ev.transaction = transactions.log(event).id;
+  ev.timestamp = event.block.timestamp;
+  ev.contract = contract.id;
+  ev.bondId = event.params.bondId;
+
+  ev.periodicInterestRate = BigDecimal.fromString(
+    event.params.periodicInterestRate.toString()
   );
   ev.periodicity = event.params.periodicity;
   ev.methodOfRepayment = event.params.methodOfRepayment;
@@ -152,13 +199,11 @@ export function handleBondParametersEdited(
   );
 
   const bond = fetchBond(contract, event.params.bondId.toString());
-  bond.coupure = event.params.coupure;
-  bond.withholdingTaxRate = ev.withholdingTaxNum.div(ev.withholdingTaxDen);
-  bond.grossInterestRate = ev.interestNum.div(ev.interestDen);
   bond.netReturn = ev.netReturn.div(scale);
   bond.periodicInterestRate = ev.periodicInterestRate.div(scale);
   bond.duration = ev.duration;
   bond.maxSupply = ev.maxSupply;
+  bond.status = 'Active';
 
   if (ev.methodOfRepayment == BigInt.fromString('0')) {
     bond.methodOfRepayment = 'Bullet';

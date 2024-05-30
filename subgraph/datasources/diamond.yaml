@@ -15,10 +15,14 @@
         - name: BondFacet
           file: {root}/out/BondFacet.sol/BondFacet.json
       eventHandlers:
-        - event: BondInitialized(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
-          handler: handleBondInitialized
-        - event: BondParametersEdited(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
-          handler: handleBondParametersEdited
+        - event: BondInitialized(uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleBondInitializedPart1
+        - event: BondInitialized(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleBondInitializedPart2
+        - event: BondParametersEditedPart1(uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleBondParametersEditedPart1
+        - event: BondParametersEditedPart2(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleBondParametersEditedPart2
         - event: CouponsComputed(uint256,uint256[],uint256[],uint256[],uint256[],uint256[])
           handler: handleCouponsComputed
         - event: BondIssued(uint256,uint256,uint256)
