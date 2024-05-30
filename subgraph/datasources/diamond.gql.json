@@ -312,7 +312,7 @@
       { "name": "interestDen", "type": "BigDecimal!" },
       { "name": "withholdingTaxNum", "type": "BigDecimal!" },
       { "name": "withholdingTaxDen", "type": "BigDecimal!" },
-      { "name": "issuer", "type": "Account!" }
+      { "name": "issuer", "type": "String!" }
     ]
   },
   {
@@ -347,7 +347,7 @@
       { "name": "interestDen", "type": "BigDecimal!" },
       { "name": "withholdingTaxNum", "type": "BigDecimal!" },
       { "name": "withholdingTaxDen", "type": "BigDecimal!" },
-      { "name": "issuer", "type": "Account!" }
+      { "name": "issuer", "type": "String!" }
     ]
   },
   {
