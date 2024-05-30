@@ -145,7 +145,7 @@ export function handleBondInitializedPart2(
 }
 
 export function handleBondParametersEditedPart1(
-  event: BondInitializedPart2Event
+  event: BondInitializedPart1Event
 ): void {
   const contract = fetchBondFacet(event.address, '0');
   const ev = new BondParametersEditedPart1(
