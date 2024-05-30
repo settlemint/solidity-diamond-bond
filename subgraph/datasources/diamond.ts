@@ -75,7 +75,7 @@ export function handleBondInitializedPart1(
   ev.withholdingTaxDen = BigDecimal.fromString(
     event.params.withholdingTaxDen.toString()
   );
-  ev.issuer = Bytes.fromHexString(event.issuer);
+  ev.issuer = Bytes.fromHexString(event.params.issuer);
   const bond = fetchBond(contract, event.params.bondId.toString());
   bond.coupure = event.params.coupure;
   bond.withholdingTaxRate = ev.withholdingTaxNum.div(ev.withholdingTaxDen);
@@ -165,7 +165,7 @@ export function handleBondParametersEditedPart1(
   ev.withholdingTaxDen = BigDecimal.fromString(
     event.params.withholdingTaxDen.toString()
   );
-  ev.issuer = Bytes.fromHexString(event.issuer);
+  ev.issuer = Bytes.fromHexString(event.params.issuer);
   const bond = fetchBond(contract, event.params.bondId.toString());
   bond.coupure = event.params.coupure;
   bond.withholdingTaxRate = ev.withholdingTaxNum.div(ev.withholdingTaxDen);
