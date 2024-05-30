@@ -12,22 +12,28 @@ import "../contracts/upgradeInitializers/DiamondInit.sol";
 import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
 import {BondInitParams} from "../contracts/libraries/StructBondInit.sol";
 import "../contracts/interfaces/IDiamond.sol";
+import "../contracts/GenericToken.sol";
 
 contract DiamondBondTest is Test {
-    address ownership;
     address owner;
+    address issuer;
+    address investor;
     address diamondCutAddress;
     address erc1155FacetAddress;
     address diamondLoupeFacetAddress;
     address bondFacetAddress;
     address diamondAddress;
     address diamondInitAddress;
+    address genericTokenAddress;
 
     IDiamondLoupe ILoupe;
 
     function setUp() public {
         owner = vm.addr(123);
+        issuer = vm.addr(456);
+        investor = vm.addr(789);
         vm.startPrank(owner);
+
         DiamondCutFacet diamondCut = new DiamondCutFacet();
         diamondCutAddress = address(diamondCut);
 
@@ -43,7 +49,8 @@ contract DiamondBondTest is Test {
         BondFacet bondFacet = new BondFacet();
         bondFacetAddress = address(bondFacet);
 
-        //Diamond diamond = new Diamond(owner, diamondCutAddress);
+        GenericToken genericToken = new GenericToken("GenericToken", "GEN");
+        genericTokenAddress = address(genericToken);
 
         IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](3);
 
@@ -74,7 +81,9 @@ contract DiamondBondTest is Test {
         Diamond diamond = new Diamond(cuts, da);
         diamondAddress = address(diamond);
 
-        // Assign diamond address to a state variable for further testing
+        // Set the currency address in BondFacet
+        BondFacet(diamondAddress).setCurrencyAddress(genericTokenAddress);
+
         vm.stopPrank();
     }
 
@@ -100,11 +109,142 @@ contract DiamondBondTest is Test {
             __capitalAmortizationDuration: 0,
             __gracePeriodDuration: 0,
             __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
-            __issuer: address(4)
+            __issuer: issuer
         });
 
         // Call initializeBond using the deployed Diamond as the caller
         vm.prank(owner);
         BondFacet(diamondAddress).initializeBond(params);
+    }
+
+    function testReserveBonds() public {
+        BondInitParams.BondInit memory params = BondInitParams.BondInit({
+            __bondId: 1,
+            __coupure: 1000,
+            __interestNum: 5,
+            __interestDen: 100,
+            __withholdingTaxNum: 10,
+            __withholdingTaxDen: 100,
+            __periodicity: uint256(BondStorage.Periodicity.Annual),
+            __duration: 24,
+            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
+            __campaignMaxAmount: 100000,
+            __campaignMinAmount: 1000,
+            __maxAmountPerInvestor: 5000,
+            __campaignStartDate: 0,
+            __expectedIssueDate: 0,
+            __balloonRateNum: 0,
+            __balloonRateDen: 0,
+            __capitalAmortizationDuration: 0,
+            __gracePeriodDuration: 0,
+            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
+            __issuer: issuer
+        });
+
+        // Call initializeBond using the deployed Diamond as the caller
+        vm.prank(owner);
+        BondFacet(diamondAddress).initializeBond(params);
+        // Reserve bonds
+        uint256 reserveAmount = 1;
+        vm.prank(investor);
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            1,
+            reserveAmount,
+            investor
+        );
+    }
+
+    function testIssueBonds() public {
+        // Issue bonds
+        BondInitParams.BondInit memory params = BondInitParams.BondInit({
+            __bondId: 1,
+            __coupure: 1000,
+            __interestNum: 5,
+            __interestDen: 100,
+            __withholdingTaxNum: 10,
+            __withholdingTaxDen: 100,
+            __periodicity: uint256(BondStorage.Periodicity.Annual),
+            __duration: 24,
+            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
+            __campaignMaxAmount: 100000,
+            __campaignMinAmount: 1000,
+            __maxAmountPerInvestor: 5000,
+            __campaignStartDate: 0,
+            __expectedIssueDate: 0,
+            __balloonRateNum: 0,
+            __balloonRateDen: 0,
+            __capitalAmortizationDuration: 0,
+            __gracePeriodDuration: 0,
+            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
+            __issuer: issuer
+        });
+
+        // Call initializeBond using the deployed Diamond as the caller
+        vm.prank(owner);
+        BondFacet(diamondAddress).initializeBond(params);
+        // Reserve bonds
+        uint256 reserveAmount = 1;
+        vm.prank(investor);
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            1,
+            reserveAmount,
+            investor
+        );
+        vm.prank(owner);
+        BondFacet(diamondAddress).issueBond(1, 0);
+    }
+
+    function testWithdrawBonds() public {
+        // Approve token transfer for withdrawal
+        BondInitParams.BondInit memory params = BondInitParams.BondInit({
+            __bondId: 1,
+            __coupure: 1000,
+            __interestNum: 5,
+            __interestDen: 100,
+            __withholdingTaxNum: 10,
+            __withholdingTaxDen: 100,
+            __periodicity: uint256(BondStorage.Periodicity.Annual),
+            __duration: 24,
+            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
+            __campaignMaxAmount: 100000,
+            __campaignMinAmount: 1000,
+            __maxAmountPerInvestor: 5000,
+            __campaignStartDate: 0,
+            __expectedIssueDate: 0,
+            __balloonRateNum: 0,
+            __balloonRateDen: 0,
+            __capitalAmortizationDuration: 0,
+            __gracePeriodDuration: 0,
+            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
+            __issuer: issuer
+        });
+
+        // Call initializeBond using the deployed Diamond as the caller
+        vm.prank(owner);
+        BondFacet(diamondAddress).initializeBond(params);
+        // Reserve bonds
+        uint256 reserveAmount = 1;
+        vm.prank(investor);
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            1,
+            reserveAmount,
+            investor
+        );
+        vm.prank(owner);
+        BondFacet(diamondAddress).issueBond(1, 0);
+        GenericToken(genericTokenAddress).mint(investor, 1000 * 10 ** 18);
+        vm.prank(investor);
+        GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
+
+        // Withdraw bonds
+        vm.prank(owner);
+        BondFacet(diamondAddress).withdrawBondsPurchased(
+            "bondPurchaseId",
+            1,
+            investor
+        );
     }
 }
