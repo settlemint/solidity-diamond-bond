@@ -10,7 +10,7 @@ import {BondStorage} from "./BondStorage.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract BondFacet is BondStorage {
-    ERC1155Facet private __bond;
+    address private __bond;
     address private __currencyAddress;
 
     // Events
@@ -722,7 +722,7 @@ contract BondFacet is BondStorage {
 
     function initializeBond(BondInitParams.BondInit memory bi) external {
         //BondDetails storage _bondDetails = __bondDetails[bi.__bondId];
-        __bond = ERC1155Facet(address(this));
+        __bond = address(this);
         BondParams storage _bondDetails = bondStorage(bi.__bondId);
         if (_bondDetails.__initDone) {
             revert BondAlreadyInitialized();
@@ -1038,7 +1038,7 @@ contract BondFacet is BondStorage {
             address(this),
             tokenAmount
         );
-        __bond.mint(holder, _bondId, amount);
+        ERC1155Facet(__bond).mint(holder, _bondId, amount);
         //_bondDetails.__confirmedReservationByAddress[holder] = 0;
         _bondDetails.__isHolder[holder] = true;
         emit BondsWithdrawn(_bondPurchaseId, _bondId, holder, amount);
@@ -1061,12 +1061,12 @@ contract BondFacet is BondStorage {
         if (!_bondDetails.__issued) {
             revert BondHasNotBeenIssued();
         }
-        if (__bond.balanceOf(_old, _bondId) < _amount) {
+        if (ERC1155Facet(__bond).balanceOf(_old, _bondId) < _amount) {
             revert OldAccountDoesNotHaveEnoughBonds();
         }
         uint256 _tokenAmount = _amount * _bondDetails.__coupure;
         ERC20(__currencyAddress).transferFrom(_new, _old, _tokenAmount);
-        __bond.safeTransferFrom(_old, _new, _bondId, _amount, "");
+        ERC1155Facet(__bond).safeTransferFrom(_old, _new, _bondId, _amount, "");
         emit BondTransferred(_bondTransferId, _bondId, _old, _new, _amount);
     }
 
@@ -1076,7 +1076,7 @@ contract BondFacet is BondStorage {
         address _buyer
     ) external returns (uint256) {
         BondParams storage _bondDetails = bondStorage(_bondId);
-        uint256 userBalance = __bond.balanceOf(_buyer, _bondId);
+        uint256 userBalance = ERC1155Facet(__bond).balanceOf(_buyer, _bondId);
         uint256 interestAmount = convert(
             mul(
                 ud60x18(userBalance),
@@ -1103,6 +1103,7 @@ contract BondFacet is BondStorage {
             _bondDetails.__allClaimsReceived = true;
         }
         return interestAmount + capitalAmount;
+        return 1;
     }
 
     // withdraw coupon (with interest)
@@ -1112,7 +1113,7 @@ contract BondFacet is BondStorage {
             revert NotAllClaimsReceivedForNextPayment();
         }
 
-        uint256 userBalance = __bond.balanceOf(_buyer, _bondId);
+        uint256 userBalance = ERC1155Facet(__bond).balanceOf(_buyer, _bondId);
         uint256 interestAmount = convert(
             mul(
                 ud60x18(userBalance),

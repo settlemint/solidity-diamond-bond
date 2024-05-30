@@ -62,10 +62,21 @@ contract ERC1155Facet is Context, ERC165, IERC1155v2 {
      *
      * - `account` cannot be the zero address.
      */
+    function _balanceOf(
+        address account,
+        uint256 id
+    ) public view returns (uint256) {
+        require(
+            account != address(0),
+            "ERC1155: balance query for the zero address"
+        );
+        return _balances[id][account];
+    }
+
     function balanceOf(
         address account,
         uint256 id
-    ) public view virtual override returns (uint256) {
+    ) external view returns (uint256) {
         require(
             account != address(0),
             "ERC1155: balance query for the zero address"
@@ -92,7 +103,7 @@ contract ERC1155Facet is Context, ERC165, IERC1155v2 {
         uint256[] memory batchBalances = new uint256[](accounts.length);
 
         for (uint256 i = 0; i < accounts.length; ++i) {
-            batchBalances[i] = balanceOf(accounts[i], ids[i]);
+            batchBalances[i] = _balanceOf(accounts[i], ids[i]);
         }
 
         return batchBalances;
@@ -351,10 +362,11 @@ contract ERC1155Facet is Context, ERC165, IERC1155v2 {
     }
 
     function getSelectors() external pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](3);
+        bytes4[] memory selectors = new bytes4[](4);
         selectors[0] = ERC1155Facet.mint.selector;
         selectors[1] = ERC1155Facet.burn.selector;
         selectors[2] = ERC1155Facet.getmsgSender.selector;
+        selectors[3] = ERC1155Facet.balanceOf.selector;
 
         return selectors;
     }

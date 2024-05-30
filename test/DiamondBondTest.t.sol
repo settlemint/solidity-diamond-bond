@@ -84,40 +84,6 @@ contract DiamondBondTest is Test {
         // Set the currency address in BondFacet
         BondFacet(diamondAddress).setCurrencyAddress(genericTokenAddress);
 
-        vm.stopPrank();
-    }
-
-    function testInitializeBond() public {
-        // Create mock parameters for initializing a bond
-        BondInitParams.BondInit memory params = BondInitParams.BondInit({
-            __bondId: 1,
-            __coupure: 1000,
-            __interestNum: 5,
-            __interestDen: 100,
-            __withholdingTaxNum: 10,
-            __withholdingTaxDen: 100,
-            __periodicity: uint256(BondStorage.Periodicity.Annual),
-            __duration: 24,
-            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
-            __campaignMinAmount: 1000,
-            __maxAmountPerInvestor: 5000,
-            __campaignStartDate: 1713603094,
-            __expectedIssueDate: 1716195094,
-            __balloonRateNum: 0,
-            __balloonRateDen: 0,
-            __capitalAmortizationDuration: 0,
-            __gracePeriodDuration: 0,
-            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
-            __issuer: issuer
-        });
-
-        // Call initializeBond using the deployed Diamond as the caller
-        vm.prank(owner);
-        BondFacet(diamondAddress).initializeBond(params);
-    }
-
-    function testReserveBonds() public {
         BondInitParams.BondInit memory params = BondInitParams.BondInit({
             __bondId: 1,
             __coupure: 1000,
@@ -140,11 +106,11 @@ contract DiamondBondTest is Test {
             __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
             __issuer: issuer
         });
-
-        // Call initializeBond using the deployed Diamond as the caller
-        vm.prank(owner);
         BondFacet(diamondAddress).initializeBond(params);
-        // Reserve bonds
+        vm.stopPrank();
+    }
+
+    function testReserveBonds() public {
         uint256 reserveAmount = 1;
         vm.prank(investor);
         BondFacet(diamondAddress).reserve(
@@ -155,34 +121,29 @@ contract DiamondBondTest is Test {
         );
     }
 
+    function testReserveAndRescind() public {
+        // Call initializeBond using the deployed Diamond as the caller
+        // Reserve bonds
+        uint256 reserveAmount = 1;
+        vm.prank(investor);
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            1,
+            reserveAmount,
+            investor
+        );
+        vm.prank(investor);
+        BondFacet(diamondAddress).rescindReservation(
+            "bondPurchaseId",
+            1,
+            investor
+        );
+    }
+
     function testIssueBonds() public {
         // Issue bonds
-        BondInitParams.BondInit memory params = BondInitParams.BondInit({
-            __bondId: 1,
-            __coupure: 1000,
-            __interestNum: 5,
-            __interestDen: 100,
-            __withholdingTaxNum: 10,
-            __withholdingTaxDen: 100,
-            __periodicity: uint256(BondStorage.Periodicity.Annual),
-            __duration: 24,
-            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
-            __campaignMinAmount: 1000,
-            __maxAmountPerInvestor: 5000,
-            __campaignStartDate: 0,
-            __expectedIssueDate: 0,
-            __balloonRateNum: 0,
-            __balloonRateDen: 0,
-            __capitalAmortizationDuration: 0,
-            __gracePeriodDuration: 0,
-            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
-            __issuer: issuer
-        });
 
         // Call initializeBond using the deployed Diamond as the caller
-        vm.prank(owner);
-        BondFacet(diamondAddress).initializeBond(params);
         // Reserve bonds
         uint256 reserveAmount = 1;
         vm.prank(investor);
@@ -197,33 +158,6 @@ contract DiamondBondTest is Test {
     }
 
     function testWithdrawBonds() public {
-        // Approve token transfer for withdrawal
-        BondInitParams.BondInit memory params = BondInitParams.BondInit({
-            __bondId: 1,
-            __coupure: 1000,
-            __interestNum: 5,
-            __interestDen: 100,
-            __withholdingTaxNum: 10,
-            __withholdingTaxDen: 100,
-            __periodicity: uint256(BondStorage.Periodicity.Annual),
-            __duration: 24,
-            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
-            __campaignMinAmount: 1000,
-            __maxAmountPerInvestor: 5000,
-            __campaignStartDate: 0,
-            __expectedIssueDate: 0,
-            __balloonRateNum: 0,
-            __balloonRateDen: 0,
-            __capitalAmortizationDuration: 0,
-            __gracePeriodDuration: 0,
-            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
-            __issuer: issuer
-        });
-
-        // Call initializeBond using the deployed Diamond as the caller
-        vm.prank(owner);
-        BondFacet(diamondAddress).initializeBond(params);
         // Reserve bonds
         uint256 reserveAmount = 1;
         vm.prank(investor);
@@ -246,5 +180,10 @@ contract DiamondBondTest is Test {
             1,
             investor
         );
+    }
+
+    function testClaimCoupon() public {
+        vm.prank(investor);
+        BondFacet(diamondAddress).claimCoupon(1, investor);
     }
 }
