@@ -22,5 +22,6 @@ library BondInitParams {
         uint256 __periodicity;
         uint256 __formOfFinancing;
         uint256 __methodOfRepayment;
+        address __issuer;
     }
 }

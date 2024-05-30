@@ -99,7 +99,8 @@ contract DiamondBondTest is Test {
             __balloonRateDen: 0,
             __capitalAmortizationDuration: 0,
             __gracePeriodDuration: 0,
-            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond)
+            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
+            __issuer: address(4)
         });
 
         // Call initializeBond using the deployed Diamond as the caller

@@ -20,7 +20,8 @@ contract BondFacet is BondStorage {
         uint256 interestNum,
         uint256 interestDen,
         uint256 withholdingTaxNum,
-        uint256 withholdingTaxDen
+        uint256 withholdingTaxDen,
+        address issuer
     );
 
     event BondInitializedPart2(
@@ -47,7 +48,8 @@ contract BondFacet is BondStorage {
         uint256 interestNum,
         uint256 interestDen,
         uint256 withholdingTaxNum,
-        uint256 withholdingTaxDen
+        uint256 withholdingTaxDen,
+        address issuer
     );
 
     event BondParametersEditedPart2(
@@ -573,6 +575,7 @@ contract BondFacet is BondStorage {
     ) internal {
         //BondDetails storage _bondDetails = __bondDetails[bi.__bondId];
         BondParams storage _bondDetails = bondStorage(bi.__bondId);
+        _bondDetails.__issuer = bi.__issuer;
         _bondDetails.__coupure = bi.__coupure;
         if (bi.__interestDen == 0) {
             revert DivideByZero();
@@ -732,7 +735,8 @@ contract BondFacet is BondStorage {
             bi.__interestNum,
             bi.__interestDen,
             bi.__withholdingTaxNum,
-            bi.__withholdingTaxDen
+            bi.__withholdingTaxDen,
+            bi.__issuer
         );
         emit BondInitializedPart2(
             bi.__bondId,
@@ -772,7 +776,8 @@ contract BondFacet is BondStorage {
             bi.__interestNum,
             bi.__interestDen,
             bi.__withholdingTaxNum,
-            bi.__withholdingTaxDen
+            bi.__withholdingTaxDen,
+            bi.__issuer
         );
         emit BondParametersEditedPart2(
             bi.__bondId,

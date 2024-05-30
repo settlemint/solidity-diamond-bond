@@ -84,6 +84,7 @@ contract BondStorage {
         MethodOfRepayment __methodOfRepayment;
         BondStatus __status;
         address __currencyAddress;
+        address __issuer;
     }
 
     function bondStorage(
