@@ -15,7 +15,7 @@
         - name: BondFacet
           file: {root}/out/BondFacet.sol/BondFacet.json
       eventHandlers:
-        - event: BondInitializedPart1(uint256,uint256,uint256,uint256,uint256,uint256)
+        - event: BondInitializedPart1(uint256,uint256,uint256,uint256,uint256,uint256,address)
           handler: handleBondInitializedPart1
         - event: BondInitializedPart2(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleBondInitializedPart2
