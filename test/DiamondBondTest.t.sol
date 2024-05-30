@@ -186,4 +186,15 @@ contract DiamondBondTest is Test {
         vm.prank(investor);
         BondFacet(diamondAddress).claimCoupon(1, investor);
     }
+
+    function testWithdrawCoupon() public {
+        vm.prank(investor);
+        BondFacet(diamondAddress).claimCoupon(1, investor);
+        vm.prank(owner);
+        GenericToken(genericTokenAddress).mint(investor, 10000 * 10 ** 18);
+        vm.startPrank(issuer);
+        GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
+        BondFacet(diamondAddress).withdrawCouponClaim(1, investor);
+        vm.stopPrank();
+    }
 }
