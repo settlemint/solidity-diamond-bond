@@ -346,7 +346,8 @@
       { "name": "interestNum", "type": "BigDecimal!" },
       { "name": "interestDen", "type": "BigDecimal!" },
       { "name": "withholdingTaxNum", "type": "BigDecimal!" },
-      { "name": "withholdingTaxDen", "type": "BigDecimal!" }
+      { "name": "withholdingTaxDen", "type": "BigDecimal!" },
+      { "name": "issuer", "type": "Account!" }
     ]
   },
   {
