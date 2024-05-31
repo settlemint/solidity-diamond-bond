@@ -5,7 +5,6 @@ import "forge-std/Test.sol";
 import "forge-std/console.sol";
 import "../contracts/facets/BondFacet.sol";
 import "../contracts/facets/ERC1155Facet.sol";
-import "../contracts/facets/DiamondCutFacet.sol";
 import "../contracts/facets/DiamondLoupeFacet.sol";
 import "../contracts/Diamond.sol";
 import "../contracts/upgradeInitializers/DiamondInit.sol";
@@ -22,7 +21,6 @@ contract DiamondBondTest is Test {
     address issuer;
     address investor;
     address investor2;
-    address diamondCutAddress;
     address erc1155FacetAddress;
     address diamondLoupeFacetAddress;
     address bondFacetAddress;
@@ -38,9 +36,6 @@ contract DiamondBondTest is Test {
         investor = vm.addr(789);
         investor2 = vm.addr(1011);
         vm.startPrank(owner);
-
-        DiamondCutFacet diamondCut = new DiamondCutFacet();
-        diamondCutAddress = address(diamondCut);
 
         DiamondInit diamondInit = new DiamondInit();
         diamondInitAddress = address(diamondInit);
@@ -127,6 +122,10 @@ contract DiamondBondTest is Test {
 
         vm.prank(owner);
         Diamond(diamondAddress).diamondCut(cuts, address(0), "");
+        address[] memory addresses;
+        addresses = DiamondLoupeFacet(diamondAddress).facetAddresses();
+        assertEq(addresses[0], bondFacetAddress);
+        assertEq(addresses[1], diamondLoupeFacetAddress);
     }
 
     function testGetCouponDates() public {
