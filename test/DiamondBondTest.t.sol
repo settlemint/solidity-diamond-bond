@@ -576,6 +576,17 @@ contract DiamondBondTest is Test {
         diamondAddress.transfer(1 ether);
     }
 
+    function testFallback() public {
+        bytes memory data = abi.encodeWithSignature("nonExistentFunction()");
+        (bool success, bytes memory result) = address(diamondAddress).call(
+            data
+        );
+        assertFalse(
+            success,
+            "Fallback should revert for non-existent function"
+        );
+    }
+
     function testTransferBond() public {
         // Approve the new account to transfer tokens
         uint256 transferAmount = 2;
