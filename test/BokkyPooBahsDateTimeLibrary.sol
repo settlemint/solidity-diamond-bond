@@ -42,9 +42,28 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(expectedDay, day);
     }
 
+    function testGetTimeComponents() public {
+        uint256 timestamp = 1696518600; // Unix timestamp for 2023-10-05 15:10:00 UTC
+
+        uint256 hour = BokkyPooBahsDateTimeLibrary.getHour(timestamp);
+        uint256 minute = BokkyPooBahsDateTimeLibrary.getMinute(timestamp);
+        uint256 second = BokkyPooBahsDateTimeLibrary.getSecond(timestamp);
+
+        assertEq(hour, 15, "Hour extraction is incorrect");
+        assertEq(minute, 10, "Minute extraction is incorrect");
+        assertEq(second, 0, "Second extraction is incorrect");
+    }
     function testDaysFromDate() public {
         uint256 day = BokkyPooBahsDateTimeLibrary._daysFromDate(1970, 1, 2);
         assertEq(day, 1);
+    }
+
+    function testDaysToDate() public {
+        (uint256 year, uint256 month, uint256 day) = BokkyPooBahsDateTimeLibrary
+            ._daysToDate(1);
+        assertEq(year, 1970);
+        assertEq(month, 1);
+        assertEq(day, 2);
     }
 
     function testTimestampFromDateTime() public {
@@ -335,5 +354,134 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
             toTimestamp
         );
         assertEq(diff, 2, "Difference in years is incorrect");
+    }
+
+    function testAddTimeComponents() public {
+        uint256 timestamp = 1696518600; // Unix timestamp for 2023-10-05 14:30:00 UTC
+
+        // Add hours
+        uint256 hoursToAdd = 5;
+        uint256 expectedTimestampAfterHours = 1696536600; // Unix timestamp for 2023-10-05 19:30:00 UTC
+        uint256 newTimestamp = BokkyPooBahsDateTimeLibrary.addHours(
+            timestamp,
+            hoursToAdd
+        );
+        assertEq(
+            newTimestamp,
+            expectedTimestampAfterHours,
+            "Adding hours is incorrect"
+        );
+
+        // Add minutes
+        uint256 minutesToAdd = 45;
+        uint256 expectedTimestampAfterMinutes = 1696521300; // Unix timestamp for 2023-10-05 15:15:00 UTC
+        newTimestamp = BokkyPooBahsDateTimeLibrary.addMinutes(
+            timestamp,
+            minutesToAdd
+        );
+        assertEq(
+            newTimestamp,
+            expectedTimestampAfterMinutes,
+            "Adding minutes is incorrect"
+        );
+
+        // Add seconds
+        uint256 secondsToAdd = 90;
+        uint256 expectedTimestampAfterSeconds = 1696518690; // Unix timestamp for 2023-10-05 14:31:30 UTC
+        newTimestamp = BokkyPooBahsDateTimeLibrary.addSeconds(
+            timestamp,
+            secondsToAdd
+        );
+        assertEq(
+            newTimestamp,
+            expectedTimestampAfterSeconds,
+            "Adding seconds is incorrect"
+        );
+    }
+
+    function testSubTimeComponents() public {
+        uint256 timestamp = 1696518600; // Unix timestamp for 2023-10-05 14:30:00 UTC
+
+        // Subtract hours
+        uint256 hoursToSub = 5;
+        uint256 expectedTimestampAfterHours = 1696500600; // Unix timestamp for 2023-10-05 09:30:00 UTC
+        uint256 newTimestamp = BokkyPooBahsDateTimeLibrary.subHours(
+            timestamp,
+            hoursToSub
+        );
+        assertEq(
+            newTimestamp,
+            expectedTimestampAfterHours,
+            "Subtracting hours is incorrect"
+        );
+
+        // Subtract minutes
+        uint256 minutesToSub = 45;
+        uint256 expectedTimestampAfterMinutes = 1696515900; // Unix timestamp for 2023-10-05 13:45:00 UTC
+        newTimestamp = BokkyPooBahsDateTimeLibrary.subMinutes(
+            timestamp,
+            minutesToSub
+        );
+        assertEq(
+            newTimestamp,
+            expectedTimestampAfterMinutes,
+            "Subtracting minutes is incorrect"
+        );
+
+        // Subtract seconds
+        uint256 secondsToSub = 90;
+        uint256 expectedTimestampAfterSeconds = 1696518510; // Unix timestamp for 2023-10-05 14:28:30 UTC
+        newTimestamp = BokkyPooBahsDateTimeLibrary.subSeconds(
+            timestamp,
+            secondsToSub
+        );
+        assertEq(
+            newTimestamp,
+            expectedTimestampAfterSeconds,
+            "Subtracting seconds is incorrect"
+        );
+    }
+
+    function testDiffTimeComponents() public {
+        uint256 fromTimestamp = 1696516200; // Unix timestamp for 2023-10-05 14:30:00 UTC
+        uint256 toTimestamp = 1696546800; // Unix timestamp for 2023-10-05 23:00:00 UTC
+
+        // Difference in hours
+        uint256 expectedDiffHours = 8; // 8 hours difference
+        uint256 diffHours = BokkyPooBahsDateTimeLibrary.diffHours(
+            fromTimestamp,
+            toTimestamp
+        );
+        assertEq(
+            diffHours,
+            expectedDiffHours,
+            "Difference in hours is incorrect"
+        );
+
+        // Difference in minutes
+        toTimestamp = 1696519800; // Unix timestamp for 2023-10-05 15:30:00 UTC
+        uint256 expectedDiffMinutes = 60; // 60 minutes difference
+        uint256 diffMinutes = BokkyPooBahsDateTimeLibrary.diffMinutes(
+            fromTimestamp,
+            toTimestamp
+        );
+        assertEq(
+            diffMinutes,
+            expectedDiffMinutes,
+            "Difference in minutes is incorrect"
+        );
+
+        // Difference in seconds
+        toTimestamp = 1696516260; // Unix timestamp for 2023-10-05 14:31:00 UTC
+        uint256 expectedDiffSeconds = 60; // 60 seconds difference
+        uint256 diffSeconds = BokkyPooBahsDateTimeLibrary.diffSeconds(
+            fromTimestamp,
+            toTimestamp
+        );
+        assertEq(
+            diffSeconds,
+            expectedDiffSeconds,
+            "Difference in seconds is incorrect"
+        );
     }
 }
