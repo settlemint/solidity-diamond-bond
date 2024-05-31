@@ -572,6 +572,10 @@ contract DiamondBondTest is Test {
         );
     }
 
+    function testDiamaondReceivesEth() public {
+        diamondAddress.transfer(1 ether);
+    }
+
     function testTransferBond() public {
         // Approve the new account to transfer tokens
         uint256 transferAmount = 2;
