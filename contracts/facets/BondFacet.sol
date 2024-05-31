@@ -1097,6 +1097,7 @@ contract BondFacet is BondStorage {
     ) external returns (uint256) {
         BondParams storage _bondDetails = bondStorage(_bondId);
         uint256 userBalance = ERC1155Facet(__bond).balanceOf(_buyer, _bondId);
+        require(userBalance != 0);
         uint256 interestAmount = convert(
             mul(
                 ud60x18(userBalance),

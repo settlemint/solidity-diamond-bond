@@ -504,18 +504,43 @@ contract DiamondBondTest is Test {
         );
     }
 
-    function testClaimCoupon() public {
-        vm.prank(investor);
-        BondFacet(diamondAddress).claimCoupon(1, investor);
-    }
-
-    function testWithdrawCoupon() public {
-        vm.prank(investor);
-        BondFacet(diamondAddress).claimCoupon(1, investor);
-        vm.prank(owner);
+    function testClaimAndWithdrawCoupon() public {
+        vm.startPrank(investor);
+        BondFacet(diamondAddress).reserve("bp1", 1, 1, investor);
+        GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        BondFacet(diamondAddress).issueBond(1, 0);
         GenericToken(genericTokenAddress).mint(investor, 10000 * 10 ** 18);
+        GenericToken(genericTokenAddress).mint(issuer, 10000 * 10 ** 18);
+        BondFacet(diamondAddress).withdrawBondsPurchased("bp1", 1, investor);
+        BondFacet(diamondAddress).claimCoupon(1, investor);
         vm.startPrank(issuer);
         GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
+        BondFacet(diamondAddress).withdrawCouponClaim(1, investor);
+        vm.stopPrank();
+    }
+
+    function testWithdrawCouponBeforeAllClaimsReceived() public {
+        vm.startPrank(investor);
+        BondFacet(diamondAddress).reserve("bp1", 1, 1, investor);
+        GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
+        vm.stopPrank();
+        vm.startPrank(investor2);
+        BondFacet(diamondAddress).reserve("bp2", 1, 1, investor2);
+        GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        BondFacet(diamondAddress).issueBond(1, 0);
+        GenericToken(genericTokenAddress).mint(investor, 10000 * 10 ** 18);
+        GenericToken(genericTokenAddress).mint(investor2, 10000 * 10 ** 18);
+        GenericToken(genericTokenAddress).mint(issuer, 10000 * 10 ** 18);
+        BondFacet(diamondAddress).withdrawBondsPurchased("bp1", 1, investor);
+        BondFacet(diamondAddress).withdrawBondsPurchased("bp2", 1, investor2);
+        BondFacet(diamondAddress).claimCoupon(1, investor);
+        vm.startPrank(issuer);
+        GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
+        vm.expectRevert();
         BondFacet(diamondAddress).withdrawCouponClaim(1, investor);
         vm.stopPrank();
     }
