@@ -86,7 +86,7 @@ contract DiamondTest is Test {
         IDiamondCut.FacetCut[]
             memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
         diamondCutAdd[0] = IDiamond.FacetCut({
-            facetAddress: address(secondFacet),
+            facetAddress: address(this),
             action: IDiamond.FacetCutAction.Add,
             functionSelectors: new bytes4[](1)
         });
@@ -99,7 +99,7 @@ contract DiamondTest is Test {
         IDiamondCut.FacetCut[]
             memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
         diamondCutReplace[0] = IDiamond.FacetCut({
-            facetAddress: address(this),
+            facetAddress: address(secondFacet),
             action: IDiamond.FacetCutAction.Replace,
             functionSelectors: new bytes4[](1)
         });
@@ -107,6 +107,7 @@ contract DiamondTest is Test {
 
         vm.prank(owner);
         diamondTest.diamondCut(diamondCutReplace, address(0), "");
+        vm.prank(owner);
     }
 
     function testDiamondCutReplaceWithEmptyFacet() public {
@@ -167,9 +168,6 @@ contract DiamondTest is Test {
         diamondTest.diamondCut(diamondCutReplace, address(0), "");
     }
 
-    function replacementFunction() external pure returns (string memory) {
-        return "Replacement function called";
-    }
     function validFunction() external pure returns (string memory) {
         return "Valid function called";
     }

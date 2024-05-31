@@ -150,15 +150,6 @@ contract DiamondBondTest is Test {
         uint256[] memory remainingCapital;
         (gross, net, capital, remainingCapital) = BondFacet(diamondAddress)
             .getCouponsRates(1);
-        for (uint i = 0; i < gross.length; i++) {
-            console.log(gross[i]);
-            console.log(net[i]);
-            console.log(capital[i]);
-            console.log(remainingCapital[i]);
-            console.log("");
-        }
-        console.log(BondFacet(diamondAddress).getPeriodicInterest(1));
-        BondFacet(diamondAddress)._setCouponRates(1);
     }
 
     function testFallbackFunction() public {

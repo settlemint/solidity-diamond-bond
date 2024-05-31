@@ -104,9 +104,7 @@ export function handleBondInitializedPart2(
   ev.formOfFinancing = event.params.formOfFinancing;
   ev.duration = event.params.duration;
   ev.netReturn = BigDecimal.fromString(event.params.netReturn.toString());
-  ev.maxSupply = BigDecimal.fromString(event.params.maxSupply.toString()).div(
-    scale
-  );
+  ev.maxSupply = BigDecimal.fromString(event.params.maxSupply.toString());
 
   const bond = fetchBond(contract, event.params.bondId.toString());
   bond.netReturn = ev.netReturn.div(scale);
@@ -194,9 +192,7 @@ export function handleBondParametersEditedPart2(
   ev.formOfFinancing = event.params.formOfFinancing;
   ev.duration = event.params.duration;
   ev.netReturn = BigDecimal.fromString(event.params.netReturn.toString());
-  ev.maxSupply = BigDecimal.fromString(event.params.maxSupply.toString()).div(
-    scale
-  );
+  ev.maxSupply = BigDecimal.fromString(event.params.maxSupply.toString());
 
   const bond = fetchBond(contract, event.params.bondId.toString());
   bond.netReturn = ev.netReturn.div(scale);
