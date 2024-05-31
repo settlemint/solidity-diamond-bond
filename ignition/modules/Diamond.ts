@@ -5,7 +5,7 @@ const DiamondModule = buildModule('DiamondModule', (m) => {
   const facets = facetNames.map((facetName) => m.contract(facetName));
   const selectors = [
     ['0x7a0ed627', '0xcdffacc6', '0xadfca15e', '0x52ef6b2c'],
-    ['0x156e29f6', '0xf5298aca', '0x01a69546', '0x00fdd58e'],
+    ['0x156e29f6', '0xf5298aca', '0x01a69546', '0x00fdd58e', '0xf242432a'],
     [
       '0xc7dd361c',
       '0x796b89ec',

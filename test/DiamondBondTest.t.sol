@@ -417,6 +417,7 @@ contract DiamondBondTest is Test {
             .facetFunctionSelectors(erc1155FacetAddress);
         facetSelectors = ERC1155Facet(erc1155FacetAddress).getSelectors();
         assertEq(diamondSelectors[0], facetSelectors[0]);
+        console.logBytes4(facetSelectors[4]);
     }
 
     function testLoupeFacets() public {
