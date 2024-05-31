@@ -97,16 +97,74 @@ contract DiamondTest is Test {
 
         // Now, replace the function
         IDiamondCut.FacetCut[]
-            memory diamondCutDelete = new IDiamondCut.FacetCut[](1);
-        diamondCutDelete[0] = IDiamond.FacetCut({
+            memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
+        diamondCutReplace[0] = IDiamond.FacetCut({
             facetAddress: address(this),
             action: IDiamond.FacetCutAction.Replace,
             functionSelectors: new bytes4[](1)
         });
-        diamondCutDelete[0].functionSelectors[0] = this.validFunction.selector;
+        diamondCutReplace[0].functionSelectors[0] = this.validFunction.selector;
 
         vm.prank(owner);
-        diamondTest.diamondCut(diamondCutDelete, address(0), "");
+        diamondTest.diamondCut(diamondCutReplace, address(0), "");
+    }
+
+    function testDiamondCutReplaceWithEmptyFacet() public {
+        // First, add a function to replace
+        IDiamondCut.FacetCut[]
+            memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
+        diamondCutAdd[0] = IDiamond.FacetCut({
+            facetAddress: address(this),
+            action: IDiamond.FacetCutAction.Add,
+            functionSelectors: new bytes4[](1)
+        });
+        diamondCutAdd[0].functionSelectors[0] = this.validFunction.selector;
+
+        vm.prank(owner);
+        diamondTest.diamondCut(diamondCutAdd, address(0), "");
+
+        // Now, replace the function
+        IDiamondCut.FacetCut[]
+            memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
+        diamondCutReplace[0] = IDiamond.FacetCut({
+            facetAddress: address(1234),
+            action: IDiamond.FacetCutAction.Replace,
+            functionSelectors: new bytes4[](1)
+        });
+        diamondCutReplace[0].functionSelectors[0] = this.validFunction.selector;
+
+        vm.prank(owner);
+        vm.expectRevert();
+        diamondTest.diamondCut(diamondCutReplace, address(0), "");
+    }
+
+    function testDiamondCutReplaceSameFacet() public {
+        // First, add a function to replace
+        IDiamondCut.FacetCut[]
+            memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
+        diamondCutAdd[0] = IDiamond.FacetCut({
+            facetAddress: address(this),
+            action: IDiamond.FacetCutAction.Add,
+            functionSelectors: new bytes4[](1)
+        });
+        diamondCutAdd[0].functionSelectors[0] = this.validFunction.selector;
+
+        vm.prank(owner);
+        diamondTest.diamondCut(diamondCutAdd, address(0), "");
+
+        // Now, replace the function
+        IDiamondCut.FacetCut[]
+            memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
+        diamondCutReplace[0] = IDiamond.FacetCut({
+            facetAddress: address(this),
+            action: IDiamond.FacetCutAction.Replace,
+            functionSelectors: new bytes4[](1)
+        });
+        diamondCutReplace[0].functionSelectors[0] = this.validFunction.selector;
+
+        vm.prank(owner);
+        vm.expectRevert();
+        diamondTest.diamondCut(diamondCutReplace, address(0), "");
     }
 
     function replacementFunction() external pure returns (string memory) {
