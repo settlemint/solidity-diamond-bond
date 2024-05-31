@@ -36,6 +36,13 @@ contract Diamond {
         // Code can be added here to perform actions and set state variables.
     }
 
+    function diamondCut(
+        IDiamondCut.FacetCut[] memory _diamondCut,
+        address _init,
+        bytes memory _calldata
+    ) external {
+        LibDiamond.diamondCut(_diamondCut, _init, _calldata);
+    }
     // Find facet for function that is called and execute the
     // function if a facet is found and return any value.
     fallback() external payable {

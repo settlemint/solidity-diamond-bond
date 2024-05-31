@@ -26,7 +26,7 @@ contract DiamondBondTest is Test {
     address erc1155FacetAddress;
     address diamondLoupeFacetAddress;
     address bondFacetAddress;
-    address diamondAddress;
+    address payable diamondAddress;
     address diamondInitAddress;
     address genericTokenAddress;
 
@@ -84,7 +84,7 @@ contract DiamondBondTest is Test {
         });
 
         Diamond diamond = new Diamond(cuts, da);
-        diamondAddress = address(diamond);
+        diamondAddress = payable(address(diamond));
 
         // Set the currency address in BondFacet
         BondFacet(diamondAddress).setCurrencyAddress(genericTokenAddress);
@@ -113,6 +113,20 @@ contract DiamondBondTest is Test {
         });
         BondFacet(diamondAddress).initializeBond(params);
         vm.stopPrank();
+    }
+
+    function testRemoveFacet() public {
+        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](1);
+        console.logAddress(address(0));
+
+        cuts[0] = IDiamond.FacetCut({
+            facetAddress: address(0),
+            action: IDiamond.FacetCutAction.Remove,
+            functionSelectors: ERC1155Facet(erc1155FacetAddress).getSelectors()
+        });
+
+        vm.prank(owner);
+        Diamond(diamondAddress).diamondCut(cuts, address(0), "");
     }
 
     function testGetCouponDates() public {
