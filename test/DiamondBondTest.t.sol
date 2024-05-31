@@ -256,4 +256,13 @@ contract DiamondBondTest is Test {
         BondFacet(diamondAddress).withdrawCouponClaim(1, investor);
         vm.stopPrank();
     }
+
+    function testLoupe() public {
+        vm.prank(owner);
+        address[] memory addresses;
+        addresses = DiamondLoupeFacet(diamondAddress).facetAddresses();
+        assertEq(addresses[0], erc1155FacetAddress);
+        assertEq(addresses[1], diamondLoupeFacetAddress);
+        assertEq(addresses[2], bondFacetAddress);
+    }
 }
