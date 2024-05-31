@@ -16,6 +16,7 @@ contract DiamondTest is Test {
         diamondTest = new DiamondTestContract();
         diamondTest.setContractOwner(owner);
         secondFacet = new SecondFacet();
+        secondFacet.validFunction();
     }
 
     function testSetContractOwner() public {
