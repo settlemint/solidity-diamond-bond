@@ -444,6 +444,49 @@ contract DiamondBondTest is Test {
         );
     }
 
+    function testReserveWhenNotAvailable() public {
+        uint256 bondId = 2;
+        BondInitParams.BondInit memory params = BondInitParams.BondInit({
+            __bondId: bondId,
+            __coupure: 1000,
+            __interestNum: 5,
+            __interestDen: 100,
+            __withholdingTaxNum: 10,
+            __withholdingTaxDen: 100,
+            __periodicity: uint256(BondStorage.Periodicity.Annual),
+            __duration: 24,
+            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
+            __campaignMaxAmount: 100000,
+            __campaignMinAmount: 1000,
+            __maxAmountPerInvestor: 100,
+            __campaignStartDate: 0,
+            __expectedIssueDate: 0,
+            __balloonRateNum: 0,
+            __balloonRateDen: 0,
+            __capitalAmortizationDuration: 0,
+            __gracePeriodDuration: 0,
+            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
+            __issuer: issuer
+        });
+        BondFacet(diamondAddress).initializeBond(params);
+        uint256 reserveAmount = 100;
+        vm.startPrank(investor);
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            bondId,
+            reserveAmount,
+            investor
+        );
+        vm.startPrank(investor2);
+        vm.expectRevert();
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId2",
+            bondId,
+            reserveAmount,
+            investor2
+        );
+    }
+
     function testReserveAndRescind() public {
         // Call initializeBond using the deployed Diamond as the caller
         // Reserve bonds

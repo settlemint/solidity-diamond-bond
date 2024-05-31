@@ -6,7 +6,6 @@ import "prb-math/UD60x18.sol";
 import {BokkyPooBahsDateTimeLibrary} from "../libraries/BokkyPooBahsDateTimeLibrary.sol";
 import {BondInitParams} from "../libraries/StructBondInit.sol";
 import {BondStorage} from "./BondStorage.sol";
-import "forge-std/console.sol";
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
