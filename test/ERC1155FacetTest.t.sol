@@ -94,4 +94,38 @@ contract ERC1155FacetTest is Test {
         bool isApproved = erc1155.isApprovedForAll(user1, operator);
         assertTrue(isApproved);
     }
+
+    function testBalanceOfBatch() public {
+        address[] memory accounts = new address[](3);
+        uint256[] memory ids = new uint256[](3);
+
+        uint256 tokenId1 = 1;
+        uint256 tokenId2 = 2;
+
+        erc1155.mint(owner, tokenId1, 100);
+        erc1155.mint(user1, tokenId1, 50);
+        erc1155.mint(user2, tokenId2, 200);
+
+        accounts[0] = owner;
+        accounts[1] = user1;
+        accounts[2] = user2;
+
+        ids[0] = tokenId1;
+        ids[1] = tokenId1;
+        ids[2] = tokenId2;
+
+        uint256[] memory balances = erc1155.balanceOfBatch(accounts, ids);
+
+        assertEq(
+            balances[0],
+            100,
+            "Balance of owner for tokenId1 should be 100"
+        );
+        assertEq(balances[1], 50, "Balance of user1 for tokenId1 should be 50");
+        assertEq(
+            balances[2],
+            200,
+            "Balance of user2 for tokenId2 should be 200"
+        );
+    }
 }
