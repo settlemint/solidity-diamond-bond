@@ -15,6 +15,7 @@ import "../contracts/interfaces/IDiamond.sol";
 import "../contracts/GenericToken.sol";
 import "../contracts/interfaces/IDiamondLoupe.sol";
 import "../contracts/facets/BondStorage.sol";
+import "../contracts/libraries/LibDiamond.sol";
 
 contract DiamondBondTest is Test {
     address owner;
@@ -126,7 +127,7 @@ contract DiamondBondTest is Test {
         for (uint i = 0; i < year.length; i++) {
             assertEq(year[i], expectedYear[i]);
             assertEq(month[i], expectedMonth[i]);
-            assertEq(day[i], expectedD[i]);
+            assertEq(day[i], expectedDay[i]);
         }
     }
 
