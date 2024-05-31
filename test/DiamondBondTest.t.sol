@@ -138,6 +138,73 @@ contract DiamondBondTest is Test {
         BondFacet(diamondAddress).editBondParameters(params);
     }
 
+    function testInitializeCampaigns() public {
+        BondInitParams.BondInit memory params = BondInitParams.BondInit({
+            __bondId: 2,
+            __coupure: 1000,
+            __interestNum: 6,
+            __interestDen: 100,
+            __withholdingTaxNum: 10,
+            __withholdingTaxDen: 100,
+            __periodicity: uint256(BondStorage.Periodicity.Monthly),
+            __duration: 24,
+            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
+            __campaignMaxAmount: 100000,
+            __campaignMinAmount: 1000,
+            __maxAmountPerInvestor: 5,
+            __campaignStartDate: 0,
+            __expectedIssueDate: 0,
+            __balloonRateNum: 0,
+            __balloonRateDen: 0,
+            __capitalAmortizationDuration: 0,
+            __gracePeriodDuration: 0,
+            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
+            __issuer: issuer
+        });
+        vm.startPrank(owner);
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 3;
+        params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 4;
+        params.__periodicity = uint256(BondStorage.Periodicity.Monthly);
+        params.__balloonRateNum = 10;
+        params.__balloonRateDen = 100;
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 5;
+        params.__periodicity = uint256(BondStorage.Periodicity.Monthly);
+        params.__gracePeriodDuration = 2;
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 6;
+        params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
+        params.__gracePeriodDuration = 3;
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 7;
+        params.__periodicity = uint256(BondStorage.Periodicity.Annual);
+        params.__gracePeriodDuration = 12;
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 8;
+        params.__periodicity = uint256(BondStorage.Periodicity.Monthly);
+        params.__capitalAmortizationDuration = 2;
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 9;
+        params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
+        params.__capitalAmortizationDuration = 3;
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 10;
+        params.__periodicity = uint256(BondStorage.Periodicity.Annual);
+        params.__capitalAmortizationDuration = 12;
+        BondFacet(diamondAddress).initializeBond(params);
+    }
+
     function testEditBondParametersWhenBondIsIssued() public {
         BondInitParams.BondInit memory params = BondInitParams.BondInit({
             __bondId: 1,

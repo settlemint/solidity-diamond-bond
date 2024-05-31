@@ -594,10 +594,20 @@ contract BondFacet is BondStorage {
             if (bi.__periodicity == uint256(Periodicity.Annual)) {
                 if (bi.__gracePeriodDuration % 12 != 0) {
                     revert GracePeriodDurationIsNotAMultpleOfTwelve();
+                } else {
+                    this.setGracePeriodDuration(
+                        bi.__bondId,
+                        bi.__gracePeriodDuration
+                    );
                 }
             } else if (bi.__periodicity == uint256(Periodicity.Quarterly)) {
                 if (bi.__gracePeriodDuration % 3 != 0) {
                     revert GracePeriodDurationIsNotAMultpleOfThree();
+                } else {
+                    this.setGracePeriodDuration(
+                        bi.__bondId,
+                        bi.__gracePeriodDuration
+                    );
                 }
             }
         }
@@ -605,10 +615,20 @@ contract BondFacet is BondStorage {
             if (bi.__periodicity == uint256(Periodicity.Annual)) {
                 if (bi.__capitalAmortizationDuration % 12 != 0) {
                     revert CapitalAmortizationFreePeriodDurationIsNotAMultpleOfTwelve();
+                } else {
+                    this.setCapitalAmortizationFreeDuration(
+                        bi.__bondId,
+                        bi.__capitalAmortizationDuration
+                    );
                 }
             } else if (bi.__periodicity == uint256(Periodicity.Quarterly)) {
                 if (bi.__capitalAmortizationDuration % 3 != 0) {
                     revert CapitalAmortizationFreePeriodDurationIsNotAMultpleOfThree();
+                } else {
+                    this.setCapitalAmortizationFreeDuration(
+                        bi.__bondId,
+                        bi.__capitalAmortizationDuration
+                    );
                 }
             }
         }
@@ -684,6 +704,11 @@ contract BondFacet is BondStorage {
         if (bi.__balloonRateNum != 0 && bi.__balloonRateDen != 0) {
             _bondDetails.__balloonRate = convert(
                 div(ud60x18(bi.__balloonRateNum), ud60x18(bi.__balloonRateDen))
+            );
+            this.setBalloonRate(
+                bi.__bondId,
+                bi.__balloonRateNum,
+                bi.__balloonRateDen
             );
         }
 
