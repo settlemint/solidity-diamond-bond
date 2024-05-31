@@ -111,6 +111,62 @@ contract DiamondBondTest is Test {
         vm.stopPrank();
     }
 
+    function testEditBondParameters() public {
+        BondInitParams.BondInit memory params = BondInitParams.BondInit({
+            __bondId: 1,
+            __coupure: 1000,
+            __interestNum: 6,
+            __interestDen: 100,
+            __withholdingTaxNum: 10,
+            __withholdingTaxDen: 100,
+            __periodicity: uint256(BondStorage.Periodicity.Annual),
+            __duration: 24,
+            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
+            __campaignMaxAmount: 100000,
+            __campaignMinAmount: 1000,
+            __maxAmountPerInvestor: 5,
+            __campaignStartDate: 0,
+            __expectedIssueDate: 0,
+            __balloonRateNum: 0,
+            __balloonRateDen: 0,
+            __capitalAmortizationDuration: 0,
+            __gracePeriodDuration: 0,
+            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
+            __issuer: issuer
+        });
+        vm.prank(owner);
+        BondFacet(diamondAddress).editBondParameters(params);
+    }
+
+    function testEditBondParametersWhenBondIsIssued() public {
+        BondInitParams.BondInit memory params = BondInitParams.BondInit({
+            __bondId: 1,
+            __coupure: 1000,
+            __interestNum: 6,
+            __interestDen: 100,
+            __withholdingTaxNum: 10,
+            __withholdingTaxDen: 100,
+            __periodicity: uint256(BondStorage.Periodicity.Annual),
+            __duration: 24,
+            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
+            __campaignMaxAmount: 100000,
+            __campaignMinAmount: 1000,
+            __maxAmountPerInvestor: 5,
+            __campaignStartDate: 0,
+            __expectedIssueDate: 0,
+            __balloonRateNum: 0,
+            __balloonRateDen: 0,
+            __capitalAmortizationDuration: 0,
+            __gracePeriodDuration: 0,
+            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
+            __issuer: issuer
+        });
+        vm.startPrank(owner);
+        BondFacet(diamondAddress).issueBond(1, 2);
+        vm.expectRevert();
+        BondFacet(diamondAddress).editBondParameters(params);
+    }
+
     function testReserveBonds() public {
         uint256 reserveAmount = 1;
         vm.prank(investor);
