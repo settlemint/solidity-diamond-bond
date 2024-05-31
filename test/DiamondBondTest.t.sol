@@ -14,6 +14,7 @@ import {BondInitParams} from "../contracts/libraries/StructBondInit.sol";
 import "../contracts/interfaces/IDiamond.sol";
 import "../contracts/GenericToken.sol";
 import "../contracts/interfaces/IDiamondLoupe.sol";
+import "../contracts/facets/BondStorage.sol";
 
 contract DiamondBondTest is Test {
     address owner;
@@ -353,6 +354,8 @@ contract DiamondBondTest is Test {
             __issuer: issuer
         });
         BondFacet(diamondAddress).initializeBond(params);
+        vm.expectEmit(true, true, true, true);
+        emit BondFacet.Cancelled(2);
         BondFacet(diamondAddress).cancel(2);
     }
 
@@ -490,5 +493,12 @@ contract DiamondBondTest is Test {
             ERC1155Facet(diamondAddress).balanceOf(investor2, bondId),
             transferAmount
         );
+    }
+
+    function testTerminateBond() public {
+        vm.prank(owner);
+        vm.expectEmit(true, true, true, true);
+        emit BondFacet.BondTerminated(1);
+        BondFacet(diamondAddress).terminate(1);
     }
 }

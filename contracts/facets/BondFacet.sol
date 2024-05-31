@@ -24,6 +24,8 @@ contract BondFacet is BondStorage {
         address issuer
     );
 
+    event Cancelled(uint256 bondId);
+
     event BondInitializedPart2(
         uint256 bondId,
         uint256 periodicInterestRate,
@@ -826,6 +828,7 @@ contract BondFacet is BondStorage {
         //BondDetails storage _bondDetails = __bondDetails[_bondId];
         _bondDetails.__cancelled = true;
         //_bondDetails2.__cancelled = true;
+        emit Cancelled(_bondId);
     }
 
     function setBalloonRate(
