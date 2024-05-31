@@ -53,6 +53,11 @@ contract GenericTokenTest is Test {
         vm.prank(owner);
         vm.expectRevert();
         token.mint(user1, 10);
+        vm.prank(owner);
+        token.unpause();
+        assertEq(token.paused(), false);
+        vm.prank(owner);
+        token.mint(user1, 10);
     }
 
     function testTransfer() public {
