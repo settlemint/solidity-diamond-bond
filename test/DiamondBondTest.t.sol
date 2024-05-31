@@ -126,7 +126,7 @@ contract DiamondBondTest is Test {
         for (uint i = 0; i < year.length; i++) {
             assertEq(year[i], expectedYear[i]);
             assertEq(month[i], expectedMonth[i]);
-            assertEq(day[i], expectedDay[i]);
+            assertEq(day[i], expectedD[i]);
         }
     }
 
