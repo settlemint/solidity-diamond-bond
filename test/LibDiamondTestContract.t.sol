@@ -82,6 +82,37 @@ contract DiamondTest is Test {
         diamondTest.diamondCut(diamondCutDelete, address(0), "");
     }
 
+    function testDeleteFunctionThatDoesNotExist() public {
+        // First, add a function to replace
+        IDiamondCut.FacetCut[]
+            memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
+        diamondCutAdd[0] = IDiamond.FacetCut({
+            facetAddress: address(this),
+            action: IDiamond.FacetCutAction.Add,
+            functionSelectors: new bytes4[](1)
+        });
+        diamondCutAdd[0].functionSelectors[0] = this.validFunction.selector;
+
+        vm.prank(owner);
+        diamondTest.diamondCut(diamondCutAdd, address(0), "");
+
+        // Now, replace the function
+        IDiamondCut.FacetCut[]
+            memory diamondCutDelete = new IDiamondCut.FacetCut[](1);
+        diamondCutDelete[0] = IDiamond.FacetCut({
+            facetAddress: address(0),
+            action: IDiamond.FacetCutAction.Remove,
+            functionSelectors: new bytes4[](1)
+        });
+        diamondCutDelete[0].functionSelectors[0] = this
+            .invalidFunction
+            .selector;
+
+        vm.prank(owner);
+        vm.expectRevert();
+        diamondTest.diamondCut(diamondCutDelete, address(0), "");
+    }
+
     function testDiamondCutReplace() public {
         // First, add a function to replace
         IDiamondCut.FacetCut[]
@@ -170,6 +201,9 @@ contract DiamondTest is Test {
     }
 
     function validFunction() external pure returns (string memory) {
+        return "Valid function called";
+    }
+    function invalidFunction() external pure returns (string memory) {
         return "Valid function called";
     }
 }
