@@ -6,6 +6,7 @@ import "prb-math/UD60x18.sol";
 import {BokkyPooBahsDateTimeLibrary} from "../libraries/BokkyPooBahsDateTimeLibrary.sol";
 import {BondInitParams} from "../libraries/StructBondInit.sol";
 import {BondStorage} from "./BondStorage.sol";
+import "forge-std/console.sol";
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -268,12 +269,6 @@ contract BondFacet is BondStorage {
 
         _bondDetails.__issueDate = _issueTimeStamp;
         emit IssueDateSet(_bondId, _issueTimeStamp);
-    }
-
-    function _setCouponRates(
-        uint256 _bondId
-    ) external returns (uint256[] memory, uint256[] memory, uint256[] memory) {
-        setCouponRates(_bondId);
     }
 
     function setCouponRates(
@@ -1162,7 +1157,7 @@ contract BondFacet is BondStorage {
         }
     }
     function getSelectors() external pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](20);
+        bytes4[] memory selectors = new bytes4[](19);
         selectors[0] = BondFacet.initializeBond.selector;
         selectors[1] = BondFacet.setCurrencyAddress.selector;
         selectors[2] = BondFacet.editBondParameters.selector;
@@ -1182,7 +1177,6 @@ contract BondFacet is BondStorage {
         selectors[16] = BondFacet.withdrawBondsPurchased.selector;
         selectors[17] = BondFacet.terminate.selector;
         selectors[18] = BondFacet.issueBond.selector;
-        selectors[19] = BondFacet._setCouponRates.selector;
 
         return selectors;
     }

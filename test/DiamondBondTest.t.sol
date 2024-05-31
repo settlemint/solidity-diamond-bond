@@ -382,6 +382,50 @@ contract DiamondBondTest is Test {
         );
     }
 
+    function testReserveBondsBeforeOrAfterCampaign() public {
+        BondInitParams.BondInit memory params = BondInitParams.BondInit({
+            __bondId: 2,
+            __coupure: 1000,
+            __interestNum: 5,
+            __interestDen: 100,
+            __withholdingTaxNum: 10,
+            __withholdingTaxDen: 100,
+            __periodicity: uint256(BondStorage.Periodicity.Annual),
+            __duration: 24,
+            __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
+            __campaignMaxAmount: 100000,
+            __campaignMinAmount: 1000,
+            __maxAmountPerInvestor: 5,
+            __campaignStartDate: 2,
+            __expectedIssueDate: 0,
+            __balloonRateNum: 0,
+            __balloonRateDen: 0,
+            __capitalAmortizationDuration: 0,
+            __gracePeriodDuration: 0,
+            __formOfFinancing: uint256(BondStorage.FormOfFinancing.Bond),
+            __issuer: issuer
+        });
+        BondFacet(diamondAddress).initializeBond(params);
+
+        uint256 reserveAmount = 1;
+        vm.prank(investor);
+        vm.expectRevert();
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            2,
+            reserveAmount,
+            investor
+        );
+        vm.warp(4000000000000000);
+        vm.expectRevert();
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            2,
+            reserveAmount,
+            investor
+        );
+    }
+
     function testReserveMoreThanMax() public {
         uint256 reserveAmount = 5;
         vm.startPrank(investor);
