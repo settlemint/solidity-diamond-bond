@@ -128,4 +128,25 @@ contract ERC1155FacetTest is Test {
             "Balance of user2 for tokenId2 should be 200"
         );
     }
+    function testSupportsInterface() public {
+        // ERC165 Interface ID for IERC165
+        bytes4 interfaceIdERC165 = type(IERC165).interfaceId;
+        // ERC165 Interface ID for IERC1155v2
+        bytes4 interfaceIdERC1155v2 = type(IERC1155v2).interfaceId;
+        // ERC165 Interface ID for non-supported interface (example)
+        bytes4 interfaceIdNonSupported = 0xffffffff;
+
+        assertTrue(
+            erc1155.supportsInterface(interfaceIdERC165),
+            "Should support IERC165 interface"
+        );
+        assertTrue(
+            erc1155.supportsInterface(interfaceIdERC1155v2),
+            "Should support IERC1155v2 interface"
+        );
+        assertFalse(
+            erc1155.supportsInterface(interfaceIdNonSupported),
+            "Should not support non-supported interface"
+        );
+    }
 }
