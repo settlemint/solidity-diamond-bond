@@ -145,6 +145,7 @@ contract BondFacet is BondStorage {
     error OldAccountDoesNotHaveEnoughBonds();
 
     error CannotReserveBeforeSignupDate();
+    error CannotReserveAfterCampaignEnd();
     error ExceedingMaxAmountPerInvestor();
     error NotAllClaimsReceivedForNextPayment();
     error DivideByZero();
@@ -924,6 +925,9 @@ contract BondFacet is BondStorage {
         if (block.timestamp < _bondDetails.__campaignStartDate) {
             revert CannotReserveBeforeSignupDate();
         }
+        if (block.timestamp > _bondDetails.__campaignEndDate) {
+            revert CannotReserveAfterCampaignEnd();
+        }
         if (actualAmountOfBonds == 0) {
             revert NoMoreBondsToBuy();
         }
@@ -1103,7 +1107,6 @@ contract BondFacet is BondStorage {
             _bondDetails.__allClaimsReceived = true;
         }
         return interestAmount + capitalAmount;
-        return 1;
     }
 
     // withdraw coupon (with interest)

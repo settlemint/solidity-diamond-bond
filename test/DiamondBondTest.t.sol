@@ -96,7 +96,7 @@ contract DiamondBondTest is Test {
             __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
             __campaignMaxAmount: 100000,
             __campaignMinAmount: 1000,
-            __maxAmountPerInvestor: 5000,
+            __maxAmountPerInvestor: 5,
             __campaignStartDate: 0,
             __expectedIssueDate: 0,
             __balloonRateNum: 0,
@@ -113,6 +113,24 @@ contract DiamondBondTest is Test {
     function testReserveBonds() public {
         uint256 reserveAmount = 1;
         vm.prank(investor);
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            1,
+            reserveAmount,
+            investor
+        );
+    }
+
+    function testReserveMoreThanMax() public {
+        uint256 reserveAmount = 5;
+        vm.startPrank(investor);
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            1,
+            reserveAmount,
+            investor
+        );
+        vm.expectRevert();
         BondFacet(diamondAddress).reserve(
             "bondPurchaseId",
             1,
@@ -155,6 +173,20 @@ contract DiamondBondTest is Test {
         );
         vm.prank(owner);
         BondFacet(diamondAddress).issueBond(1, 0);
+    }
+
+    function testPauseUnpause() public {
+        vm.startPrank(owner);
+        BondFacet(diamondAddress).pauseCampaign(1);
+        BondFacet(diamondAddress).unpauseCampaign(1);
+        vm.stopPrank();
+    }
+
+    function testBuyingAfterCampaignEnds() public {
+        vm.startPrank(investor);
+        vm.warp(2000000000);
+        vm.expectRevert();
+        BondFacet(diamondAddress).reserve("bondPurchaseId", 1, 1, investor);
     }
 
     function testCancelCampaign() public {
