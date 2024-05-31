@@ -301,6 +301,50 @@ contract DiamondBondTest is Test {
         vm.expectRevert();
         BondFacet(diamondAddress).initializeBond(params);
 
+        params.__bondId = 13;
+        params.__periodicity = uint256(BondStorage.Periodicity.Annual);
+        params.__methodOfRepayment = uint256(
+            BondStorage.MethodOfRepayment.Bullet
+        );
+        params.__capitalAmortizationDuration = 0;
+
+        params.__duration = 11;
+        vm.expectRevert();
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 14;
+        params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
+        params.__methodOfRepayment = uint256(
+            BondStorage.MethodOfRepayment.Bullet
+        );
+        params.__duration = 11;
+        vm.expectRevert();
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 15;
+        params.__periodicity = uint256(BondStorage.Periodicity.Annual);
+        params.__methodOfRepayment = uint256(
+            BondStorage.MethodOfRepayment.Degressive
+        );
+        params.__duration = 24;
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 16;
+        params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
+        params.__methodOfRepayment = uint256(
+            BondStorage.MethodOfRepayment.Degressive
+        );
+        params.__duration = 24;
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 17;
+        params.__periodicity = uint256(BondStorage.Periodicity.Monthly);
+        params.__methodOfRepayment = uint256(
+            BondStorage.MethodOfRepayment.Degressive
+        );
+        params.__duration = 24;
+        BondFacet(diamondAddress).initializeBond(params);
+
         vm.stopPrank();
     }
 
