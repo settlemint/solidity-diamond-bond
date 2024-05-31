@@ -112,7 +112,6 @@ contract DiamondBondTest is Test {
 
     function testRemoveFacet() public {
         IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](1);
-        console.logAddress(address(0));
 
         cuts[0] = IDiamond.FacetCut({
             facetAddress: address(0),

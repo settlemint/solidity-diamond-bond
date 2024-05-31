@@ -25,6 +25,28 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         );
     }
 
+    function testGetYearMonthDay() public {
+        uint256 year = 2023;
+        uint256 month = 10;
+        uint256 day = 5;
+        uint256 timestamp = BokkyPooBahsDateTimeLibrary.timestampFromDate(
+            year,
+            month,
+            day
+        );
+        uint256 expectedYear = BokkyPooBahsDateTimeLibrary.getYear(timestamp);
+        assertEq(expectedYear, year);
+        uint256 expectedMonth = BokkyPooBahsDateTimeLibrary.getMonth(timestamp);
+        assertEq(expectedMonth, month);
+        uint256 expectedDay = BokkyPooBahsDateTimeLibrary.getDay(timestamp);
+        assertEq(expectedDay, day);
+    }
+
+    function testDaysFromDate() public {
+        uint256 day = BokkyPooBahsDateTimeLibrary._daysFromDate(1970, 1, 2);
+        assertEq(day, 1);
+    }
+
     function testTimestampFromDateTime() public {
         uint256 year = 2023;
         uint256 month = 10;
