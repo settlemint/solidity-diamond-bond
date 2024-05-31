@@ -30,7 +30,6 @@ const DiamondModule = buildModule('DiamondModule', (m) => {
     ],
   ];
 
-  const diamondCutFacet = m.contract('DiamondCutFacet');
   const diamondInit = m.contract('DiamondInit');
 
   const genericToken = m.contract('GenericToken', ['GenericToken', 'GEN']);
@@ -44,7 +43,7 @@ const DiamondModule = buildModule('DiamondModule', (m) => {
     [m.getAccount(0), diamondInit, '0xe1c7392a'],
   ]);
 
-  return { diamondCutFacet, diamondInit, genericToken, facets };
+  return { diamondInit, genericToken, facets };
   //return { genericToken };
 });
 export default DiamondModule;
