@@ -11,12 +11,15 @@ contract DiamondTest is Test {
     SecondFacet secondFacet;
     address owner = address(1);
     address newOwner = address(2);
+    MockInitialization mockInitialization;
 
     function setUp() public {
         diamondTest = new DiamondTestContract();
         diamondTest.setContractOwner(owner);
         secondFacet = new SecondFacet();
         secondFacet.validFunction();
+        mockInitialization = new MockInitialization();
+        mockInitialization.initialize();
     }
 
     function testSetContractOwner() public {
@@ -199,6 +202,29 @@ contract DiamondTest is Test {
         vm.expectRevert();
         diamondTest.diamondCut(diamondCutReplace, address(0), "");
     }
+    function testDiamondCutWithInitialization() public {
+        // Create a mock facet cut
+        IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](
+            1
+        );
+        diamondCut[0] = IDiamond.FacetCut({
+            facetAddress: address(this),
+            action: IDiamond.FacetCutAction.Add,
+            functionSelectors: new bytes4[](1)
+        });
+        diamondCut[0].functionSelectors[0] = this.validFunction.selector;
+
+        // Prepare calldata for initialization
+        bytes memory initCalldata = abi.encodeWithSignature("initialize()");
+
+        // Perform the diamond cut with initialization
+        vm.prank(owner);
+        diamondTest.diamondCut(
+            diamondCut,
+            address(mockInitialization),
+            initCalldata
+        );
+    }
 
     function validFunction() external pure returns (string memory) {
         return "Valid function called";
@@ -211,5 +237,13 @@ contract DiamondTest is Test {
 contract SecondFacet {
     function validFunction() external pure returns (string memory) {
         return "Replacement function called";
+    }
+}
+
+contract MockInitialization {
+    bool public initialized;
+
+    function initialize() external {
+        initialized = true;
     }
 }
