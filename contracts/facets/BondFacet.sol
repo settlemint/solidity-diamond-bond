@@ -553,17 +553,11 @@ contract BondFacet is BondStorage {
             _bondDetails.__totalToBeRepaid += netInterest;
         }
 
-        if (_bondDetails.__periodicInterestRate < 1) {
-            emit PeriodicInterestRateSet(
-                _bondId,
-                _bondDetails.__periodicInterestRate
-            );
-        } else {
-            emit PeriodicInterestRateSet(
-                _bondId,
-                _bondDetails.__periodicInterestRate
-            );
-        }
+        emit PeriodicInterestRateSet(
+            _bondId,
+            _bondDetails.__periodicInterestRate
+        );
+
         emit CouponsComputed(
             _bondId,
             _bondDetails.__couponDates,
