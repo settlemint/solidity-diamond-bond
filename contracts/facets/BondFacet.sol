@@ -1090,14 +1090,6 @@ contract BondFacet is BondStorage {
         ERC1155Facet(__bond).safeTransferFrom(_old, _new, _bondId, _amount, "");
         emit BondTransferred(_bondTransferId, _bondId, _old, _new, _amount);
     }
-
-    function getPeriodicInterest(
-        uint256 _bondId
-    ) external view returns (uint256) {
-        BondParams storage _bondDetails = bondStorage(_bondId);
-        return _bondDetails.__periodicInterestRate;
-    }
-
     // claim coupon (+ interest)
     function claimCoupon(
         uint256 _bondId,
@@ -1169,7 +1161,7 @@ contract BondFacet is BondStorage {
         }
     }
     function getSelectors() external pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](21);
+        bytes4[] memory selectors = new bytes4[](20);
         selectors[0] = BondFacet.initializeBond.selector;
         selectors[1] = BondFacet.setCurrencyAddress.selector;
         selectors[2] = BondFacet.editBondParameters.selector;
@@ -1189,8 +1181,7 @@ contract BondFacet is BondStorage {
         selectors[16] = BondFacet.withdrawBondsPurchased.selector;
         selectors[17] = BondFacet.terminate.selector;
         selectors[18] = BondFacet.issueBond.selector;
-        selectors[19] = BondFacet.getPeriodicInterest.selector;
-        selectors[20] = BondFacet._setCouponRates.selector;
+        selectors[19] = BondFacet._setCouponRates.selector;
 
         return selectors;
     }

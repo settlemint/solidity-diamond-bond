@@ -125,6 +125,9 @@ contract DiamondBondTest is Test {
         addresses = DiamondLoupeFacet(diamondAddress).facetAddresses();
         assertEq(addresses[0], bondFacetAddress);
         assertEq(addresses[1], diamondLoupeFacetAddress);
+        vm.prank(owner);
+        vm.expectRevert();
+        ERC1155Facet(diamondAddress).balanceOf(owner, 1);
     }
 
     function testGetCouponDates() public {
