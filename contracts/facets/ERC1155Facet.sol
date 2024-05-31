@@ -139,7 +139,7 @@ contract ERC1155Facet is Context, ERC165, IERC1155v2 {
         uint256 id,
         uint256 amount,
         bytes memory data
-    ) public virtual override {
+    ) external virtual override {
         //require(from == _msgSender() || isApprovedForAll(from, _msgSender()), "ERC1155: caller is not owner nor
         // approved");
         _safeTransferFrom(from, to, id, amount, data);
@@ -362,11 +362,12 @@ contract ERC1155Facet is Context, ERC165, IERC1155v2 {
     }
 
     function getSelectors() external pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](4);
+        bytes4[] memory selectors = new bytes4[](5);
         selectors[0] = ERC1155Facet.mint.selector;
         selectors[1] = ERC1155Facet.burn.selector;
         selectors[2] = ERC1155Facet.getmsgSender.selector;
         selectors[3] = ERC1155Facet.balanceOf.selector;
+        selectors[4] = ERC1155Facet.safeTransferFrom.selector;
 
         return selectors;
     }

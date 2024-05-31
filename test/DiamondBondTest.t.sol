@@ -19,6 +19,7 @@ contract DiamondBondTest is Test {
     address owner;
     address issuer;
     address investor;
+    address investor2;
     address diamondCutAddress;
     address erc1155FacetAddress;
     address diamondLoupeFacetAddress;
@@ -33,6 +34,7 @@ contract DiamondBondTest is Test {
         owner = vm.addr(123);
         issuer = vm.addr(456);
         investor = vm.addr(789);
+        investor2 = vm.addr(1011);
         vm.startPrank(owner);
 
         DiamondCutFacet diamondCut = new DiamondCutFacet();
@@ -203,6 +205,20 @@ contract DiamondBondTest is Test {
         params.__periodicity = uint256(BondStorage.Periodicity.Annual);
         params.__capitalAmortizationDuration = 12;
         BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 11;
+        params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
+        params.__capitalAmortizationDuration = 2;
+        vm.expectRevert();
+        BondFacet(diamondAddress).initializeBond(params);
+
+        params.__bondId = 12;
+        params.__periodicity = uint256(BondStorage.Periodicity.Annual);
+        params.__capitalAmortizationDuration = 11;
+        vm.expectRevert();
+        BondFacet(diamondAddress).initializeBond(params);
+
+        vm.stopPrank();
     }
 
     function testEditBondParametersWhenBondIsIssued() public {
@@ -410,5 +426,69 @@ contract DiamondBondTest is Test {
         ).facets();
 
         assertEq(facet.facetAddress, diamondFacets[0].facetAddress);
+    }
+
+    function testTransferBond() public {
+        // Approve the new account to transfer tokens
+        uint256 transferAmount = 2;
+        uint256 initialAmount = 5;
+        uint256 bondId = 1;
+        uint256 coupure = 1000;
+        vm.startPrank(owner);
+        GenericToken(genericTokenAddress).mint(
+            investor2,
+            transferAmount * coupure
+        );
+        GenericToken(genericTokenAddress).mint(
+            investor,
+            initialAmount * coupure
+        );
+        vm.stopPrank();
+        vm.startPrank(investor);
+        GenericToken(genericTokenAddress).approve(
+            diamondAddress,
+            initialAmount * coupure
+        );
+        BondFacet(diamondAddress).reserve(
+            "bondPurchaseId",
+            bondId,
+            initialAmount,
+            investor
+        );
+        vm.stopPrank();
+        vm.startPrank(owner);
+        BondFacet(diamondAddress).issueBond(bondId, 0);
+        BondFacet(diamondAddress).withdrawBondsPurchased(
+            "bondPurchaseId",
+            bondId,
+            investor
+        );
+
+        vm.stopPrank();
+        vm.prank(investor2);
+        GenericToken(genericTokenAddress).approve(
+            diamondAddress,
+            transferAmount * coupure
+        );
+
+        // Transfer the bond
+        vm.prank(owner);
+        BondFacet(diamondAddress).transferBond(
+            "transfer1",
+            bondId,
+            investor,
+            investor2,
+            transferAmount
+        );
+
+        // Check balances
+        assertEq(
+            ERC1155Facet(diamondAddress).balanceOf(investor, bondId),
+            initialAmount - transferAmount
+        );
+        assertEq(
+            ERC1155Facet(diamondAddress).balanceOf(investor2, bondId),
+            transferAmount
+        );
     }
 }
