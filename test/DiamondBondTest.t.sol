@@ -257,12 +257,22 @@ contract DiamondBondTest is Test {
         vm.stopPrank();
     }
 
-    function testLoupe() public {
+    function testLoupeAddresses() public {
         vm.prank(owner);
         address[] memory addresses;
         addresses = DiamondLoupeFacet(diamondAddress).facetAddresses();
         assertEq(addresses[0], erc1155FacetAddress);
         assertEq(addresses[1], diamondLoupeFacetAddress);
         assertEq(addresses[2], bondFacetAddress);
+    }
+
+    function testLoupeSselectors() public {
+        vm.prank(owner);
+        bytes4[] memory diamondSelectors;
+        bytes4[] memory facetSelectors;
+        diamondSelectors = DiamondLoupeFacet(diamondAddress)
+            .facetFunctionSelectors(erc1155FacetAddress);
+        facetSelectors = ERC1155Facet(erc1155FacetAddress).getSelectors();
+        assertEq(diamondSelectors[0], facetSelectors[0]);
     }
 }
