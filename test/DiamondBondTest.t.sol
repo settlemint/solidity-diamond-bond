@@ -13,6 +13,7 @@ import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
 import {BondInitParams} from "../contracts/libraries/StructBondInit.sol";
 import "../contracts/interfaces/IDiamond.sol";
 import "../contracts/GenericToken.sol";
+import "../contracts/interfaces/IDiamondLoupe.sol";
 
 contract DiamondBondTest is Test {
     address owner;
@@ -257,7 +258,7 @@ contract DiamondBondTest is Test {
         vm.stopPrank();
     }
 
-    function testLoupeAddresses() public {
+    function testLoupeFacetAddresses() public {
         vm.prank(owner);
         address[] memory addresses;
         addresses = DiamondLoupeFacet(diamondAddress).facetAddresses();
@@ -274,5 +275,17 @@ contract DiamondBondTest is Test {
             .facetFunctionSelectors(erc1155FacetAddress);
         facetSelectors = ERC1155Facet(erc1155FacetAddress).getSelectors();
         assertEq(diamondSelectors[0], facetSelectors[0]);
+    }
+
+    function testLoupeFacets() public {
+        IDiamondLoupe.Facet memory facet = IDiamondLoupe.Facet({
+            facetAddress: erc1155FacetAddress,
+            functionSelectors: ERC1155Facet(erc1155FacetAddress).getSelectors()
+        });
+        IDiamondLoupe.Facet[] memory diamondFacets = DiamondLoupeFacet(
+            diamondAddress
+        ).facets();
+
+        assertEq(facet.facetAddress, diamondFacets[0].facetAddress);
     }
 }
