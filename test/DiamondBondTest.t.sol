@@ -562,6 +562,16 @@ contract DiamondBondTest is Test {
         assertEq(facetAddress, erc1155FacetAddress);
     }
 
+    function testFacetLoupeSupportsInterface() public {
+        bytes4 interfaceIdERC165 = type(IERC165).interfaceId;
+        assertTrue(
+            DiamondLoupeFacet(diamondAddress).supportsInterface(
+                interfaceIdERC165
+            ),
+            "Should support IERC165 interface"
+        );
+    }
+
     function testTransferBond() public {
         // Approve the new account to transfer tokens
         uint256 transferAmount = 2;

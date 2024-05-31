@@ -186,11 +186,12 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     }
 
     function getSelectors() external pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](4);
+        bytes4[] memory selectors = new bytes4[](5);
         selectors[0] = DiamondLoupeFacet.facets.selector;
         selectors[1] = DiamondLoupeFacet.facetAddress.selector;
         selectors[2] = DiamondLoupeFacet.facetFunctionSelectors.selector;
         selectors[3] = DiamondLoupeFacet.facetAddresses.selector;
+        selectors[4] = DiamondLoupeFacet.supportsInterface.selector;
 
         return selectors;
     }
