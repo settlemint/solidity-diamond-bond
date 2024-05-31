@@ -432,6 +432,17 @@ contract DiamondBondTest is Test {
         assertEq(facet.facetAddress, diamondFacets[0].facetAddress);
     }
 
+    function testAddressOfSelector() public {
+        vm.startPrank(owner);
+        bytes4[] memory facetSelectors;
+        address facetAddress;
+        facetSelectors = ERC1155Facet(erc1155FacetAddress).getSelectors();
+        facetAddress = DiamondLoupeFacet(diamondAddress).facetAddress(
+            facetSelectors[4]
+        );
+        assertEq(facetAddress, erc1155FacetAddress);
+    }
+
     function testTransferBond() public {
         // Approve the new account to transfer tokens
         uint256 transferAmount = 2;
