@@ -143,6 +143,24 @@ contract DiamondBondTest is Test {
         }
     }
 
+    function testGetCouponRates() public {
+        uint256[] memory gross;
+        uint256[] memory net;
+        uint256[] memory capital;
+        uint256[] memory remainingCapital;
+        (gross, net, capital, remainingCapital) = BondFacet(diamondAddress)
+            .getCouponsRates(1);
+        for (uint i = 0; i < gross.length; i++) {
+            console.log(gross[i]);
+            console.log(net[i]);
+            console.log(capital[i]);
+            console.log(remainingCapital[i]);
+            console.log("");
+        }
+        console.log(BondFacet(diamondAddress).getPeriodicInterest(1));
+        BondFacet(diamondAddress)._setCouponRates(1);
+    }
+
     function testFallbackFunction() public {
         // Test the fallback function by calling a non-existent function
         (bool success, ) = address(diamondAddress).call(

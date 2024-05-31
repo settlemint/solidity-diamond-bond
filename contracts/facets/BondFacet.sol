@@ -270,6 +270,12 @@ contract BondFacet is BondStorage {
         emit IssueDateSet(_bondId, _issueTimeStamp);
     }
 
+    function _setCouponRates(
+        uint256 _bondId
+    ) external returns (uint256[] memory, uint256[] memory, uint256[] memory) {
+        setCouponRates(_bondId);
+    }
+
     function setCouponRates(
         uint256 _bondId
     ) internal returns (uint256[] memory, uint256[] memory, uint256[] memory) {
@@ -391,19 +397,21 @@ contract BondFacet is BondStorage {
                 }
             }
 
-            uint256 grossInterest = convert(
-                mul(
-                    ud60x18(_bondDetails.__periodicInterestRate),
-                    ud60x18(remainingCapital)
-                )
-            );
-            UD60x18 taxMultiplier = ud60x18(1) -
-                ud60x18(_bondDetails.__withholdingTax);
+            uint256 grossInterest = mul(
+                ud60x18(_bondDetails.__periodicInterestRate),
+                ud60x18(remainingCapital)
+            ).unwrap() * 1e18;
+
+            uint256 taxMultiplier = 1 *
+                10 ** 18 -
+                _bondDetails.__withholdingTax;
+
             UD60x18 taxableInterest = mul(
                 ud60x18(grossInterest),
-                taxMultiplier
+                ud60x18(taxMultiplier)
             );
-            uint256 netInterest = convert(taxableInterest);
+
+            uint256 netInterest = taxableInterest.unwrap();
 
             if (_bondDetails.__methodOfRepayment == MethodOfRepayment.Bullet) {
                 if (i < nbrOfPayments - 1) {
@@ -418,13 +426,12 @@ contract BondFacet is BondStorage {
             ) {
                 if (i == 0) {
                     uint256 balloonRate = _bondDetails.__balloonRate;
-                    UD60x18 temp = mul(
-                        ud60x18(balloonRate),
-                        ud60x18(remainingCapital)
+                    uint256 temp = convert(
+                        mul(ud60x18(balloonRate), ud60x18(remainingCapital))
                     );
-                    remainingCapital = remainingCapital - convert(temp);
+                    remainingCapital = remainingCapital - temp;
                     _bondDetails.__remainingCapital.push(remainingCapital);
-                    _bondDetails.__capitalRepayment.push(convert(temp));
+                    _bondDetails.__capitalRepayment.push(temp);
                 } else if (i == nbrOfPayments - 1) {
                     _bondDetails.__remainingCapital.push(0);
                     _bondDetails.__capitalRepayment.push(remainingCapital);
@@ -634,15 +641,15 @@ contract BondFacet is BondStorage {
                 }
             }
         }
-        _bondDetails.__interestRate = convert(
-            div(ud60x18(bi.__interestNum), ud60x18(bi.__interestDen))
-        );
-        _bondDetails.__withholdingTax = convert(
-            div(
-                ud60x18(bi.__withholdingTaxNum),
-                ud60x18(bi.__withholdingTaxDen)
-            )
-        );
+        _bondDetails.__interestRate = div(
+            ud60x18(bi.__interestNum),
+            ud60x18(bi.__interestDen)
+        ).unwrap();
+        _bondDetails.__withholdingTax = div(
+            ud60x18(bi.__withholdingTaxNum),
+            ud60x18(bi.__withholdingTaxDen)
+        ).unwrap();
+
         _bondDetails.__campaignMaxAmount = bi.__campaignMaxAmount;
         _bondDetails.__campaignMinAmount = bi.__campaignMinAmount;
         _bondDetails.__maxSupply = convert(
@@ -667,18 +674,16 @@ contract BondFacet is BondStorage {
             UD60x18 b = ud60x18(bi.__interestDen);
             UD60x18 c = ud60x18(1);
             UD60x18 d = ud60x18(4);
-            _bondDetails.__periodicInterestRate = convert(
-                pow(div(a, b), div(c, d)) - ud60x18(1)
-            );
+            _bondDetails.__periodicInterestRate = (pow(div(a, b), div(c, d)) -
+                ud60x18(1)).unwrap();
         } else if (bi.__periodicity == uint256(Periodicity.Monthly)) {
             _bondDetails.__periodicity = Periodicity.Monthly;
             UD60x18 a = ud60x18(bi.__interestDen + bi.__interestNum);
             UD60x18 b = ud60x18(bi.__interestDen);
             UD60x18 c = ud60x18(1);
             UD60x18 d = ud60x18(12);
-            _bondDetails.__periodicInterestRate = convert(
-                pow(div(a, b), div(c, d)) - ud60x18(1)
-            );
+            _bondDetails.__periodicInterestRate = (pow(div(a, b), div(c, d)) -
+                ud60x18(1)).unwrap();
         }
 
         if (bi.__methodOfRepayment == uint256(MethodOfRepayment.Degressive)) {
@@ -704,9 +709,10 @@ contract BondFacet is BondStorage {
             .__capitalAmortizationDuration;
         _bondDetails.__gracePeriodDuration = bi.__gracePeriodDuration;
         if (bi.__balloonRateNum != 0 && bi.__balloonRateDen != 0) {
-            _bondDetails.__balloonRate = convert(
-                div(ud60x18(bi.__balloonRateNum), ud60x18(bi.__balloonRateDen))
-            );
+            _bondDetails.__balloonRate = div(
+                ud60x18(bi.__balloonRateNum),
+                ud60x18(bi.__balloonRateDen)
+            ).unwrap();
             this.setBalloonRate(
                 bi.__bondId,
                 bi.__balloonRateNum,
@@ -718,12 +724,13 @@ contract BondFacet is BondStorage {
 
         _bondDetails.__netReturn =
             _bondDetails.__interestRate -
-            convert(
-                mul(
-                    ud60x18(_bondDetails.__interestRate),
-                    ud60x18(_bondDetails.__withholdingTax)
+            mul(
+                ud60x18(_bondDetails.__interestRate),
+                div(
+                    ud60x18(bi.__withholdingTaxNum),
+                    ud60x18(bi.__withholdingTaxDen)
                 )
-            );
+            ).unwrap();
 
         emit GracePeriodSet(bi.__bondId, bi.__gracePeriodDuration);
         emit BalloonRateSet(
@@ -862,18 +869,6 @@ contract BondFacet is BondStorage {
         BondParams storage _bondDetails = bondStorage(_bondId);
         _bondDetails.__gracePeriodDuration = _duration;
         emit GracePeriodSet(_bondId, _duration);
-    }
-
-    function setInterestRate(
-        uint256 _bondId,
-        uint256 _interestNum,
-        uint256 _interestDen
-    ) external {
-        //BondDetails storage _bondDetails = __bondDetails[_bondId];
-        BondParams storage _bondDetails = bondStorage(_bondId);
-        _bondDetails.__interestRate = convert(
-            div(ud60x18(_interestNum), ud60x18(_interestDen))
-        );
     }
 
     function getCouponsDates(
@@ -1102,6 +1097,13 @@ contract BondFacet is BondStorage {
         emit BondTransferred(_bondTransferId, _bondId, _old, _new, _amount);
     }
 
+    function getPeriodicInterest(
+        uint256 _bondId
+    ) external view returns (uint256) {
+        BondParams storage _bondDetails = bondStorage(_bondId);
+        return _bondDetails.__periodicInterestRate;
+    }
+
     // claim coupon (+ interest)
     function claimCoupon(
         uint256 _bondId,
@@ -1173,7 +1175,7 @@ contract BondFacet is BondStorage {
         }
     }
     function getSelectors() external pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](20);
+        bytes4[] memory selectors = new bytes4[](21);
         selectors[0] = BondFacet.initializeBond.selector;
         selectors[1] = BondFacet.setCurrencyAddress.selector;
         selectors[2] = BondFacet.editBondParameters.selector;
@@ -1183,17 +1185,18 @@ contract BondFacet is BondStorage {
         selectors[6] = BondFacet.setGracePeriodDuration.selector;
         selectors[7] = BondFacet.getCouponsDates.selector;
         selectors[8] = BondFacet.getCouponsRates.selector;
-        selectors[9] = BondFacet.setInterestRate.selector;
-        selectors[10] = BondFacet.reserve.selector;
-        selectors[11] = BondFacet.pauseCampaign.selector;
-        selectors[12] = BondFacet.unpauseCampaign.selector;
-        selectors[13] = BondFacet.rescindReservation.selector;
-        selectors[14] = BondFacet.claimCoupon.selector;
-        selectors[15] = BondFacet.withdrawCouponClaim.selector;
-        selectors[16] = BondFacet.transferBond.selector;
-        selectors[17] = BondFacet.withdrawBondsPurchased.selector;
-        selectors[18] = BondFacet.terminate.selector;
-        selectors[19] = BondFacet.issueBond.selector;
+        selectors[9] = BondFacet.reserve.selector;
+        selectors[10] = BondFacet.pauseCampaign.selector;
+        selectors[11] = BondFacet.unpauseCampaign.selector;
+        selectors[12] = BondFacet.rescindReservation.selector;
+        selectors[13] = BondFacet.claimCoupon.selector;
+        selectors[14] = BondFacet.withdrawCouponClaim.selector;
+        selectors[15] = BondFacet.transferBond.selector;
+        selectors[16] = BondFacet.withdrawBondsPurchased.selector;
+        selectors[17] = BondFacet.terminate.selector;
+        selectors[18] = BondFacet.issueBond.selector;
+        selectors[19] = BondFacet.getPeriodicInterest.selector;
+        selectors[20] = BondFacet._setCouponRates.selector;
 
         return selectors;
     }
