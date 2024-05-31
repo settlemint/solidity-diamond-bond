@@ -50,4 +50,49 @@ contract DiamondTest is Test {
         vm.prank(owner);
         diamondTest.diamondCut(diamondCut, address(0), "");
     }
+
+    function testDiamondCutDelete() public {
+        // First, add a function to replace
+        IDiamondCut.FacetCut[]
+            memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
+        diamondCutAdd[0] = IDiamond.FacetCut({
+            facetAddress: address(this),
+            action: IDiamond.FacetCutAction.Add,
+            functionSelectors: new bytes4[](1)
+        });
+        diamondCutAdd[0].functionSelectors[0] = this.validFunction.selector;
+
+        vm.prank(owner);
+        diamondTest.diamondCut(diamondCutAdd, address(0), "");
+
+        // Now, replace the function
+        IDiamondCut.FacetCut[]
+            memory diamondCutDelete = new IDiamondCut.FacetCut[](1);
+        diamondCutDelete[0] = IDiamond.FacetCut({
+            facetAddress: address(0),
+            action: IDiamond.FacetCutAction.Remove,
+            functionSelectors: new bytes4[](1)
+        });
+        diamondCutDelete[0].functionSelectors[0] = this.validFunction.selector;
+
+        vm.prank(owner);
+        diamondTest.diamondCut(diamondCutDelete, address(0), "");
+
+        /*// Verify the function was replaced
+        (bool success, bytes memory data) = address(diamond).call(
+            abi.encodeWithSignature("validFunction()")
+        );
+        assertTrue(success, "Function should be replaced successfully");
+        assertEq(
+            abi.decode(data, (string)),
+            "Replacement function called",
+            "Function replacement is incorrect"
+        );*/
+    }
+    function replacementFunction() external pure returns (string memory) {
+        return "Replacement function called";
+    }
+    function validFunction() external pure returns (string memory) {
+        return "Valid function called";
+    }
 }
