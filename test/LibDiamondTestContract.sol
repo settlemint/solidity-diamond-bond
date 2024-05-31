@@ -8,8 +8,8 @@ import "../contracts/interfaces/IDiamond.sol";
 
 contract DiamondTest is Test {
     DiamondTestContract diamondTest;
-    address owner = address(0x1);
-    address newOwner = address(0x2);
+    address owner = address(1);
+    address newOwner = address(2);
 
     function setUp() public {
         diamondTest = new DiamondTestContract();
@@ -49,8 +49,5 @@ contract DiamondTest is Test {
         // Perform the diamond cut
         vm.prank(owner);
         diamondTest.diamondCut(diamondCut, address(0), "");
-
-        // Verify the function was added
-        // Note: This is a simplified example. In a real scenario, you would need to verify the function was added correctly.
     }
 }

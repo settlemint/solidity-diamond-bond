@@ -131,6 +131,17 @@ contract DiamondBondTest is Test {
         }
     }
 
+    function testFallbackFunction() public {
+        // Test the fallback function by calling a non-existent function
+        (bool success, ) = address(diamondAddress).call(
+            abi.encodeWithSignature("nonExistentFunction()")
+        );
+        assertFalse(
+            success,
+            "Fallback function should revert for non-existent function"
+        );
+    }
+
     function testEditBondParameters() public {
         BondInitParams.BondInit memory params = BondInitParams.BondInit({
             __bondId: 1,
