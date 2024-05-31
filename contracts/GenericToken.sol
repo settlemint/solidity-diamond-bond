@@ -5,9 +5,10 @@ pragma solidity 0.8.26;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title GenericToken
@@ -21,15 +22,15 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
  *  For demonstrative purposes, 1 million GT tokens are pre-mined to the address
  *  deploying this contract.
  */
-contract GenericToken is ERC20, ERC20Burnable {
+contract GenericToken is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
     constructor(
         string memory name_,
         string memory symbol_
-    ) ERC20(name_, symbol_) {
+    ) ERC20(name_, symbol_) Ownable(msg.sender) {
         _mint(msg.sender, 1_000_000 * 10 ** decimals());
     }
 
-    function mint(address to, uint256 amount) public {
+    function mint(address to, uint256 amount) public whenNotPaused {
         _mint(to, amount);
     }
 
@@ -64,7 +65,19 @@ contract GenericToken is ERC20, ERC20Burnable {
         address from,
         address to,
         uint256 amount
-    ) internal override {
+    ) internal override(ERC20, ERC20Pausable) {
         super._update(from, to, amount);
+    }
+
+    /// @dev Pauses all token transfers.
+    /// @notice This function can only be called by the contract owner.
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    /// @dev Unpauses all token transfers.
+    /// @notice This function can only be called by the contract owner.
+    function unpause() public onlyOwner {
+        _unpause();
     }
 }
