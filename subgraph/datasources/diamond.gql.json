@@ -4,56 +4,203 @@
     "fields": [
       { "name": "id", "type": "Bytes!" },
       { "name": "asBondFacet", "type": "BondFacet" },
-      { "name": "BondParametersEditedEvents", "type": "BondParametersEdited!", "derived": "emitter" },
-      { "name": "CouponsComputedEvents", "type": "CouponsComputed!", "derived": "emitter" },
-      { "name": "BondsWithdrawnEvents", "type": "BondsWithdrawn!", "derived": "emitter" },
-      { "name": "BondIssuedEvents", "type": "BondIssued!", "derived": "emitter" },
-      { "name": "BalloonRateSetEvents", "type": "BalloonRateSet!", "derived": "emitter" },
-      { "name": "GracePeriodSetEvents", "type": "GracePeriodSet!", "derived": "emitter" },
-      { "name": "CostEmittentSetEvents", "type": "CostEmittentSet!", "derived": "emitter" },
+      {
+        "name": "BondParametersEditedPart1Events",
+        "type": "BondParametersEditedPart1!",
+        "derived": "emitter"
+      },
+      {
+        "name": "BondParametersEditedPart2Events",
+        "type": "BondParametersEditedPart2!",
+        "derived": "emitter"
+      },
+      {
+        "name": "CouponsComputedEvents",
+        "type": "CouponsComputed!",
+        "derived": "emitter"
+      },
+      {
+        "name": "BondsWithdrawnEvents",
+        "type": "BondsWithdrawn!",
+        "derived": "emitter"
+      },
+      {
+        "name": "BondIssuedEvents",
+        "type": "BondIssued!",
+        "derived": "emitter"
+      },
+      {
+        "name": "BalloonRateSetEvents",
+        "type": "BalloonRateSet!",
+        "derived": "emitter"
+      },
+      {
+        "name": "GracePeriodSetEvents",
+        "type": "GracePeriodSet!",
+        "derived": "emitter"
+      },
+      {
+        "name": "CostEmittentSetEvents",
+        "type": "CostEmittentSet!",
+        "derived": "emitter"
+      },
       {
         "name": "CapitalAmortizationFreePeriodSetEvents",
         "type": "CapitalAmortizationFreePeriodSet!",
         "derived": "emitter"
       },
-      { "name": "InvestorsCountChangedEvents", "type": "InvestorsCountChanged!", "derived": "emitter" },
-      { "name": "RevocationsCountChangedEvents", "type": "RevocationsCountChanged!", "derived": "emitter" },
-      { "name": "CampaignStartAndEndDateSetEvents", "type": "CampaignStartAndEndDateSet!", "derived": "emitter" },
-      { "name": "CampaignPausedEvents", "type": "CampaignPaused!", "derived": "emitter" },
-      { "name": "CampaignUnpausedEvents", "type": "CampaignUnpaused!", "derived": "emitter" },
-      { "name": "MinAndMaxAmountSetEvents", "type": "MinAndMaxAmountSet!", "derived": "emitter" },
-      { "name": "BondTransferrerdEvents", "type": "BondTransferred!", "derived": "emitter" },
-      { "name": "ReservedAmountChangedEvents", "type": "ReservedAmountChanged!", "derived": "emitter" },
-      { "name": "CouponStatusChangedEvents", "type": "CouponStatusChanged!", "derived": "emitter"}
+      {
+        "name": "InvestorsCountChangedEvents",
+        "type": "InvestorsCountChanged!",
+        "derived": "emitter"
+      },
+      {
+        "name": "RevocationsCountChangedEvents",
+        "type": "RevocationsCountChanged!",
+        "derived": "emitter"
+      },
+      {
+        "name": "CampaignStartAndEndDateSetEvents",
+        "type": "CampaignStartAndEndDateSet!",
+        "derived": "emitter"
+      },
+      {
+        "name": "CampaignPausedEvents",
+        "type": "CampaignPaused!",
+        "derived": "emitter"
+      },
+      {
+        "name": "CampaignUnpausedEvents",
+        "type": "CampaignUnpaused!",
+        "derived": "emitter"
+      },
+      {
+        "name": "MinAndMaxAmountSetEvents",
+        "type": "MinAndMaxAmountSet!",
+        "derived": "emitter"
+      },
+      {
+        "name": "BondTransferrerdEvents",
+        "type": "BondTransferred!",
+        "derived": "emitter"
+      },
+      {
+        "name": "ReservedAmountChangedEvents",
+        "type": "ReservedAmountChanged!",
+        "derived": "emitter"
+      },
+      {
+        "name": "CouponStatusChangedEvents",
+        "type": "CouponStatusChanged!",
+        "derived": "emitter"
+      }
     ]
   },
   {
     "name": "BondFacet",
     "fields": [
       { "name": "asAccount", "type": "Account" },
-      { "name": "BondInitializedEvent", "type": "BondInitialized!", "derived": "contract" },
-      { "name": "BondParametersEditedEvent", "type": "BondParametersEdited!", "derived": "contract" },
-      { "name": "CouponsComputedEvent", "type": "CouponsComputed!", "derived": "contract" },
-      { "name": "BondsWithdrawn", "type": "BondsWithdrawn!", "derived": "contract" },
+      {
+        "name": "BondInitializedPart1Event",
+        "type": "BondInitializedPart1!",
+        "derived": "contract"
+      },
+      {
+        "name": "BondInitializedPart2Event",
+        "type": "BondInitializedPart2!",
+        "derived": "contract"
+      },
+      {
+        "name": "BondParametersEditedPart1Event",
+        "type": "BondParametersEditedPart1!",
+        "derived": "contract"
+      },
+      {
+        "name": "BondParametersEditedPart2Event",
+        "type": "BondParametersEditedPart2!",
+        "derived": "contract"
+      },
+      {
+        "name": "CouponsComputedEvent",
+        "type": "CouponsComputed!",
+        "derived": "contract"
+      },
+      {
+        "name": "BondsWithdrawn",
+        "type": "BondsWithdrawn!",
+        "derived": "contract"
+      },
       { "name": "BondIssued", "type": "BondIssued!", "derived": "contract" },
-      { "name": "BalloonRateSet", "type": "BalloonRateSet!", "derived": "contract" },
-      { "name": "GracePeriodSet", "type": "GracePeriodSet!", "derived": "contract" },
+      {
+        "name": "BalloonRateSet",
+        "type": "BalloonRateSet!",
+        "derived": "contract"
+      },
+      {
+        "name": "GracePeriodSet",
+        "type": "GracePeriodSet!",
+        "derived": "contract"
+      },
       {
         "name": "CapitalAmortizationFreePeriodSet",
         "type": "CapitalAmortizationFreePeriodSet!",
         "derived": "contract"
       },
-      { "name": "CostEmittentSet", "type": "CostEmittentSet!", "derived": "contract" },
-      { "name": "InvestorsCountChanged", "type": "InvestorsCountChanged!", "derived": "contract" },
-      { "name": "RevocationsCountChanged", "type": "RevocationsCountChanged!", "derived": "contract" },
-      { "name": "CampaignStartAndEndDateSet", "type": "CampaignStartAndEndDateSet!", "derived": "contract" },
-      { "name": "CampaignPaused", "type": "CampaignPaused!", "derived": "contract" },
-      { "name": "CampaignUnpaused", "type": "CampaignUnpaused!", "derived": "contract" },
-      { "name": "MinAndMaxAmountSet", "type": "MinAndMaxAmountSet!", "derived": "contract" },
-      { "name": "IssueDateSet", "type": "IssueDateSet!", "derived": "contract" },
-      { "name": "BondTransferred", "type": "BondTransferred!", "derived": "contract" },
-      { "name": "ReservedAmountChanged", "type": "ReservedAmountChanged!", "derived": "contract" },
-      { "name": "CouponStatusChanged", "type": "CouponStatusChanged!", "derived": "contract"}
+      {
+        "name": "CostEmittentSet",
+        "type": "CostEmittentSet!",
+        "derived": "contract"
+      },
+      {
+        "name": "InvestorsCountChanged",
+        "type": "InvestorsCountChanged!",
+        "derived": "contract"
+      },
+      {
+        "name": "RevocationsCountChanged",
+        "type": "RevocationsCountChanged!",
+        "derived": "contract"
+      },
+      {
+        "name": "CampaignStartAndEndDateSet",
+        "type": "CampaignStartAndEndDateSet!",
+        "derived": "contract"
+      },
+      {
+        "name": "CampaignPaused",
+        "type": "CampaignPaused!",
+        "derived": "contract"
+      },
+      {
+        "name": "CampaignUnpaused",
+        "type": "CampaignUnpaused!",
+        "derived": "contract"
+      },
+      {
+        "name": "MinAndMaxAmountSet",
+        "type": "MinAndMaxAmountSet!",
+        "derived": "contract"
+      },
+      {
+        "name": "IssueDateSet",
+        "type": "IssueDateSet!",
+        "derived": "contract"
+      },
+      {
+        "name": "BondTransferred",
+        "type": "BondTransferred!",
+        "derived": "contract"
+      },
+      {
+        "name": "ReservedAmountChanged",
+        "type": "ReservedAmountChanged!",
+        "derived": "contract"
+      },
+      {
+        "name": "CouponStatusChanged",
+        "type": "CouponStatusChanged!",
+        "derived": "contract"
+      }
     ]
   },
   {
@@ -111,14 +258,14 @@
       { "name": "account", "type": "Account!" },
       { "name": "amount", "type": "BigInt!" },
       { "name": "bondId", "type": "String!" },
-      { "name": "dateOfOwnership", "type": "BigInt!"}
+      { "name": "dateOfOwnership", "type": "BigInt!" }
     ]
   },
   {
     "name": "Transfer",
     "fields": [
       { "name": "contract", "type": "BondFacet!" },
-      { "name": "bondTransferId", "type": "String!"},
+      { "name": "bondTransferId", "type": "String!" },
       { "name": "from", "type": "Account!" },
       { "name": "to", "type": "Account!" },
       { "name": "bondId", "type": "String! " },
@@ -142,7 +289,7 @@
       { "name": "stepUp", "type": "[BigDecimal!]!" },
       { "name": "stepDown", "type": "[BigDecimal!]!" },
       { "name": "fee", "type": "[BigDecimal!]!" },
-      { "name": "status", "type": "[String!]!"},
+      { "name": "status", "type": "[String!]!" },
       { "name": "capitalAndInterest", "type": "[BigDecimal!]!" },
       { "name": "totalToBeRepaid", "type": "BigDecimal!" },
       { "name": "totalAmountRepaid", "type": "BigDecimal!" },
@@ -152,7 +299,7 @@
     ]
   },
   {
-    "name": "BondInitialized",
+    "name": "BondInitializedPart1",
     "parent": "Event",
     "fields": [
       { "name": "emitter", "type": "Account!" },
@@ -165,6 +312,18 @@
       { "name": "interestDen", "type": "BigDecimal!" },
       { "name": "withholdingTaxNum", "type": "BigDecimal!" },
       { "name": "withholdingTaxDen", "type": "BigDecimal!" },
+      { "name": "issuer", "type": "Account!" }
+    ]
+  },
+  {
+    "name": "BondInitializedPart2",
+    "parent": "Event",
+    "fields": [
+      { "name": "emitter", "type": "Account!" },
+      { "name": "transaction", "type": "Transaction!" },
+      { "name": "timestamp", "type": "BigInt!" },
+      { "name": "contract", "type": "BondFacet!" },
+      { "name": "bondId", "type": "BigInt!" },
       { "name": "periodicInterestRate", "type": "BigDecimal!" },
       { "name": "periodicity", "type": "BigInt!" },
       { "name": "duration", "type": "BigInt!" },
@@ -175,7 +334,7 @@
     ]
   },
   {
-    "name": "BondParametersEdited",
+    "name": "BondParametersEditedPart1",
     "parent": "Event",
     "fields": [
       { "name": "emitter", "type": "Account!" },
@@ -188,6 +347,18 @@
       { "name": "interestDen", "type": "BigDecimal!" },
       { "name": "withholdingTaxNum", "type": "BigDecimal!" },
       { "name": "withholdingTaxDen", "type": "BigDecimal!" },
+      { "name": "issuer", "type": "Account!" }
+    ]
+  },
+  {
+    "name": "BondParametersEditedPart2",
+    "parent": "Event",
+    "fields": [
+      { "name": "emitter", "type": "Account!" },
+      { "name": "transaction", "type": "Transaction!" },
+      { "name": "timestamp", "type": "BigInt!" },
+      { "name": "contract", "type": "BondFacet!" },
+      { "name": "bondId", "type": "BigInt!" },
       { "name": "periodicInterestRate", "type": "BigDecimal!" },
       { "name": "periodicity", "type": "BigInt!" },
       { "name": "duration", "type": "BigInt!" },
@@ -419,7 +590,7 @@
       { "name": "transaction", "type": "Transaction!" },
       { "name": "timestamp", "type": "BigInt!" },
       { "name": "contract", "type": "BondFacet!" },
-      { "name": "bondTransferId", "type": "String!"},
+      { "name": "bondTransferId", "type": "String!" },
       { "name": "bondId", "type": "BigInt!" },
       { "name": "oldAccount", "type": "Account!" },
       { "name": "newAccount", "type": "Account!" },
