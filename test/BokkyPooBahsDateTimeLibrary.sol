@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 import "../contracts/libraries/BokkyPooBahsDateTimeLibrary.sol";
@@ -53,6 +53,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(minute, 10, "Minute extraction is incorrect");
         assertEq(second, 0, "Second extraction is incorrect");
     }
+
     function testDaysFromDate() public {
         uint256 day = BokkyPooBahsDateTimeLibrary._daysFromDate(1970, 1, 2);
         assertEq(day, 1);

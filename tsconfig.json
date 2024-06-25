@@ -1,14 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2020",
     "module": "commonjs",
-    "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist"
-  },
-  "include": [
-    "tasks/**/*"
-  ]
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  }
 }

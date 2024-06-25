@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 import "../contracts/facets/ERC1155Facet.sol";
@@ -128,6 +128,7 @@ contract ERC1155FacetTest is Test {
             "Balance of user2 for tokenId2 should be 200"
         );
     }
+
     function testSupportsInterface() public {
         // ERC165 Interface ID for IERC165
         bytes4 interfaceIdERC165 = type(IERC165).interfaceId;

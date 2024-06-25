@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 import "../contracts/DiamondTestContract.sol";
@@ -202,6 +202,7 @@ contract DiamondTest is Test {
         vm.expectRevert();
         diamondTest.diamondCut(diamondCutReplace, address(0), "");
     }
+
     function testDiamondCutWithInitialization() public {
         // Create a mock facet cut
         IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](
@@ -229,6 +230,7 @@ contract DiamondTest is Test {
     function validFunction() external pure returns (string memory) {
         return "Valid function called";
     }
+
     function invalidFunction() external pure returns (string memory) {
         return "Valid function called";
     }

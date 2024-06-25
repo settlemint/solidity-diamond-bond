@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity ^0.8.24;
 
 //******************************************************************************\
 //* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
@@ -147,8 +147,11 @@ library LibDiamond {
                 revert CannotAddFunctionToDiamondThatAlreadyExists(selector);
             }
             ds.facetAddressAndSelectorPosition[
-                selector
-            ] = FacetAddressAndSelectorPosition(_facetAddress, selectorCount);
+                    selector
+                ] = FacetAddressAndSelectorPosition(
+                _facetAddress,
+                selectorCount
+            );
             ds.selectors.push(selector);
             selectorCount++;
         }

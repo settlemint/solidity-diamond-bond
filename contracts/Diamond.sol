@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity ^0.8.24;
 
 //******************************************************************************\
 //* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
@@ -43,6 +43,7 @@ contract Diamond {
     ) external {
         LibDiamond.diamondCut(_diamondCut, _init, _calldata);
     }
+
     // Find facet for function that is called and execute the
     // function if a facet is found and return any value.
     fallback() external payable {
