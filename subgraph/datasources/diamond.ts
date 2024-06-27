@@ -20,7 +20,6 @@ import {
   RevocationsCountChanged as RevocationsCountChangedEvent,
   BondTransferred as BondTransferredEvent,
   ReservedAmountChanged as ReservedAmountChangedEvent,
-  CouponStatusChanged as CouponStatusChangedEvent,
 } from '../../generated/diamond/BondFacet';
 import {
   BalloonRateSet,
@@ -42,7 +41,6 @@ import {
   RevocationsCountChanged,
   BondTransferred,
   ReservedAmountChanged,
-  CouponStatusChanged,
 } from '../../generated/schema';
 import {
   fetchBond,
@@ -729,33 +727,4 @@ export function handleBondTransferred(event: BondTransferredEvent): void {
 
   ////ev.save() ;
   bond.save();
-}
-
-export function handleCouponStatusChanged(
-  event: CouponStatusChangedEvent
-): void {
-  const contract = fetchBondFacet(event.address, '0');
-  const ev = new CouponStatusChanged(
-    events.id(event).concat('-CouponStatusChanged')
-  );
-  const couponList = fetchCouponList(contract, event.params.bondId.toString());
-  const status: String[] = [];
-
-  for (let i = 0; i < couponList.status.length; i++) {
-    if (i == event.params.lineNumber.toU32()) {
-      status.push('Executed');
-    } else {
-      status.push(couponList.status[i]);
-    }
-  }
-
-  ev.emitter = Bytes.fromHexString(contract.id);
-  ev.transaction = transactions.log(event).id;
-  ev.timestamp = event.block.timestamp;
-  ev.contract = contract.id;
-  ev.bondId = event.params.bondId;
-  ev.lineNumber = event.params.lineNumber;
-
-  couponList.save();
-  ////ev.save() ;
 }

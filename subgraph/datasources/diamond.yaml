@@ -51,6 +51,4 @@
           handler: handleBondTransferred
         - event: ReservedAmountChanged(uint256,uint256)
           handler: handleReservedAmountChanged
-        - event: CouponStatusChanged(uint256,uint256)
-          handler: handleCouponStatusChanged
       file: {file}

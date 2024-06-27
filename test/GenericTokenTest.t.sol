@@ -20,7 +20,7 @@ contract GenericTokenTest is Test {
         vm.stopPrank();
     }
 
-    function testInitialSupply() public {
+    function testInitialSupply() public view {
         uint256 initialSupply = token.totalSupply();
         assertEq(initialSupply, 1_000_000 * 10 ** token.decimals());
     }

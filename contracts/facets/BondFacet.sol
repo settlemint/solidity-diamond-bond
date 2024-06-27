@@ -6,10 +6,14 @@ import "@prb/math/src/UD60x18.sol";
 import {BokkyPooBahsDateTimeLibrary} from "../libraries/BokkyPooBahsDateTimeLibrary.sol";
 import {BondInitParams} from "../libraries/StructBondInit.sol";
 import {BondStorage} from "./BondStorage.sol";
+import {OwnershipFacet} from "./OwnershipFacet.sol";
+import {IERC1155Receiver} from  "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import {ERC165, IERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract BondFacet is BondStorage {
+contract BondFacet is BondStorage, OwnershipFacet, IERC1155Receiver, ERC165 {
     address private __bond;
     address private __currencyAddress;
 
@@ -23,8 +27,6 @@ contract BondFacet is BondStorage {
         uint256 withholdingTaxDen,
         address issuer
     );
-
-    event Cancelled(uint256 bondId);
 
     event BondInitializedPart2(
         uint256 bondId,
@@ -104,7 +106,6 @@ contract BondFacet is BondStorage {
     event CampaignPaused(uint256 bondId);
     event CampaignUnpaused(uint256 bondId);
 
-    event BondTerminated(uint256 bondId);
     event PeriodicInterestRateSet(uint256 bondId, uint256 periodicInterest);
 
     event BondTransferred(
@@ -121,8 +122,6 @@ contract BondFacet is BondStorage {
         string capitalClaimId,
         uint256 capitalAmount
     );
-
-    event CouponStatusChanged(uint256 bondId, uint256 lineNumber);
 
     // Errors
     error CampaignIsPaused();
@@ -149,7 +148,6 @@ contract BondFacet is BondStorage {
     error CannotReserveBeforeSignupDate();
     error CannotReserveAfterCampaignEnd();
     error ExceedingMaxAmountPerInvestor();
-    error NotAllClaimsReceivedForNextPayment();
     error DivideByZero();
 
     modifier campaignNotPaused(uint256 _bondId) {
@@ -188,7 +186,7 @@ contract BondFacet is BondStorage {
             nbrOfPayments = _bondDetails.__duration;
         }
 
-        uint256 couponMonth;
+        uint256 couponMonth = 0;
         uint256 couponYear = year;
         uint256 couponDay = day;
 
@@ -279,7 +277,7 @@ contract BondFacet is BondStorage {
         }
 
         uint256 nbrOfPayments;
-        uint256 capitalRepayment;
+        uint256 capitalRepayment = 0;
         uint256 remainingCapital = _bondDetails.__coupure;
         if (_bondDetails.__periodicity == Periodicity.Annual) {
             nbrOfPayments = _bondDetails.__duration / 12;
@@ -743,6 +741,38 @@ contract BondFacet is BondStorage {
         );
     }
 
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
+        return interfaceId == type(IERC1155Receiver).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    // Implement onERC1155Received to handle single token type receipt
+    function onERC1155Received(
+        address operator,
+        address from,
+        uint256 id,
+        uint256 value,
+        bytes calldata data
+    ) external override returns (bytes4) {
+        // Handle the receipt of the ERC1155 token(s) here
+
+        // Return the acceptance magic value
+        return this.onERC1155Received.selector;
+    }
+
+    // Implement onERC1155BatchReceived to handle multiple token type receipt
+    function onERC1155BatchReceived(
+        address operator,
+        address from,
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
+    ) external override returns (bytes4) {
+        // Handle the receipt of the ERC1155 tokens here
+
+        // Return the acceptance magic value
+        return this.onERC1155BatchReceived.selector;
+    }
+
     function initializeBond(BondInitParams.BondInit memory bi) external {
         //BondDetails storage _bondDetails = __bondDetails[bi.__bondId];
         __bond = address(this);
@@ -752,6 +782,7 @@ contract BondFacet is BondStorage {
         }
         setParameters(bi, false);
         _bondDetails.__initDone = true;
+        _bondDetails.__currencyAddress = __currencyAddress;
         emit BondInitializedPart1(
             bi.__bondId,
             bi.__coupure,
@@ -817,15 +848,6 @@ contract BondFacet is BondStorage {
         setCouponRates(bi.__bondId);
     }
 
-    function cancel(uint256 _bondId) external {
-        BondParams storage _bondDetails = bondStorage(_bondId);
-
-        //BondDetails storage _bondDetails = __bondDetails[_bondId];
-        _bondDetails.__cancelled = true;
-        //_bondDetails2.__cancelled = true;
-        emit Cancelled(_bondId);
-    }
-
     function setBalloonRate(
         uint256 _bondId,
         uint256 _balloonRateNum,
@@ -857,64 +879,6 @@ contract BondFacet is BondStorage {
         BondParams storage _bondDetails = bondStorage(_bondId);
         _bondDetails.__gracePeriodDuration = _duration;
         emit GracePeriodSet(_bondId, _duration);
-    }
-
-    function getCouponsDates(
-        uint256 _bondId
-    )
-        external
-        view
-        returns (uint256[] memory, uint256[] memory, uint256[] memory)
-    {
-        //BondDetails storage _bondDetails = __bondDetails[_bondId];
-        BondParams storage _bondDetails = bondStorage(_bondId);
-        uint256 dateLength = _bondDetails.__couponDates.length;
-        uint256[] memory day = new uint256[](dateLength);
-        uint256[] memory month = new uint256[](dateLength);
-        uint256[] memory year = new uint256[](dateLength);
-        for (uint256 i = 0; i < dateLength; i++) {
-            (uint256 y, uint256 m, uint256 d) = BokkyPooBahsDateTimeLibrary
-                .timestampToDate(_bondDetails.__couponDates[i]);
-            day[i] = d;
-            month[i] = m;
-            year[i] = y;
-        }
-        return (day, month, year);
-    }
-
-    function getCouponsRates(
-        uint256 _bondId
-    )
-        external
-        view
-        returns (
-            uint256[] memory,
-            uint256[] memory,
-            uint256[] memory,
-            uint256[] memory
-        )
-    {
-        BondParams storage _bondDetails = bondStorage(_bondId);
-
-        uint256[] memory gross = new uint256[](
-            _bondDetails.__grossCouponRates.length
-        );
-        uint256[] memory net = new uint256[](
-            _bondDetails.__grossCouponRates.length
-        );
-        uint256[] memory capital = new uint256[](
-            _bondDetails.__capitalRepayment.length
-        );
-        uint256[] memory remainingCapital = new uint256[](
-            _bondDetails.__remainingCapital.length
-        );
-        for (uint256 i = 0; i < _bondDetails.__grossCouponRates.length; i++) {
-            gross[i] = _bondDetails.__grossCouponRates[i];
-            net[i] = _bondDetails.__netCouponRates[i];
-            capital[i] = _bondDetails.__capitalRepayment[i];
-            remainingCapital[i] = _bondDetails.__remainingCapital[i];
-        }
-        return (gross, net, capital, remainingCapital);
     }
 
     function reserve(
@@ -1000,11 +964,6 @@ contract BondFacet is BondStorage {
     ) external {
         BondParams storage _bondDetails = bondStorage(_bondId);
 
-        /*require(
-      __bondDetails[_bondId].__reservedAmountByPurchaseId[_bondPurchaseId] != 0,
-      "BondFacet: Reservation does not exist"
-    );*/
-        //should the status be "reserved"?
         _bondDetails.__reservedAmount -= _bondDetails
             .__reservedAmountByPurchaseId[_bondPurchaseId];
         _bondDetails.__reservedAmountByAddress[_buyer] -= _bondDetails
@@ -1020,7 +979,7 @@ contract BondFacet is BondStorage {
         emit ReservedAmountChanged(_bondId, _bondDetails.__reservedAmount);
     }
 
-    function issueBond(uint256 _bondId, uint256 _issueDate) external {
+    function issueBond(uint256 _bondId, uint256 _issueDate) external onlyOwner {
         BondParams storage _bondDetails = bondStorage(_bondId);
         _bondDetails.__currentLine = 1;
         if (_bondDetails.__issued) {
@@ -1031,6 +990,7 @@ contract BondFacet is BondStorage {
         _bondDetails.__issued = true;
         _bondDetails.__status = BondStatus.Issued;
         _bondDetails.__issuedAmount = _bondDetails.__reservedAmount;
+        ERC1155Facet(__bond).mint(address(this), _bondId, _bondDetails.__issuedAmount, "");
 
         emit BondIssued(_bondId, _issueDate, _bondDetails.__issuedAmount);
     }
@@ -1048,21 +1008,19 @@ contract BondFacet is BondStorage {
             _bondPurchaseId
         ];
         uint256 tokenAmount = amount * _bondDetails.__coupure;
-        ERC20(__currencyAddress).transferFrom(
+        uint256 currentAllowance = ERC20(__currencyAddress).allowance(holder, address(this));
+        require(currentAllowance >= tokenAmount, "ERC20: transfer amount exceeds allowance");
+        // slither-disable-next-line all
+        bool success = ERC20(__currencyAddress).transferFrom(
             holder,
-            address(this),
+            _bondDetails.__issuer,
             tokenAmount
         );
-        ERC1155Facet(__bond).mint(holder, _bondId, amount);
+        require(success, "ERC20: transfer failed");
+        ERC1155Facet(__bond).mint(holder, _bondId, amount, "");
         //_bondDetails.__confirmedReservationByAddress[holder] = 0;
         _bondDetails.__isHolder[holder] = true;
         emit BondsWithdrawn(_bondPurchaseId, _bondId, holder, amount);
-    }
-
-    function terminate(uint256 _bondId) external {
-        BondParams storage _bondDetails = bondStorage(_bondId);
-        _bondDetails.__status = BondStatus.Terminated;
-        emit BondTerminated(_bondId);
     }
 
     function transferBond(
@@ -1071,7 +1029,7 @@ contract BondFacet is BondStorage {
         address _old,
         address _new,
         uint256 _amount
-    ) external {
+    ) external onlyOwner {
         BondParams storage _bondDetails = bondStorage(_bondId);
         if (!_bondDetails.__issued) {
             revert BondHasNotBeenIssued();
@@ -1080,104 +1038,32 @@ contract BondFacet is BondStorage {
             revert OldAccountDoesNotHaveEnoughBonds();
         }
         uint256 _tokenAmount = _amount * _bondDetails.__coupure;
-        ERC20(__currencyAddress).transferFrom(_new, _old, _tokenAmount);
+        uint256 currentAllowance = ERC20(__currencyAddress).allowance(_new, address(this));
+        require(currentAllowance >= _tokenAmount, "ERC20: transfer amount exceeds allowance");
+        // slither-disable-next-line all
+        bool success = ERC20(__currencyAddress).transferFrom(_new, _old, _tokenAmount);
+        require(success, "ERC20: transfer failed");
         ERC1155Facet(__bond).safeTransferFrom(_old, _new, _bondId, _amount, "");
         emit BondTransferred(_bondTransferId, _bondId, _old, _new, _amount);
     }
 
-    // claim coupon (+ interest)
-    function claimCoupon(
-        uint256 _bondId,
-        address _buyer
-    ) external returns (uint256) {
-        BondParams storage _bondDetails = bondStorage(_bondId);
-        uint256 userBalance = ERC1155Facet(__bond).balanceOf(_buyer, _bondId);
-        require(userBalance != 0);
-        uint256 interestAmount = convert(
-            mul(
-                ud60x18(userBalance),
-                ud60x18(
-                    _bondDetails.__netCouponRates[_bondDetails.__currentLine]
-                )
-            )
-        );
-        uint256 capitalAmount = convert(
-            mul(
-                ud60x18(userBalance),
-                ud60x18(
-                    _bondDetails.__capitalRepayment[_bondDetails.__currentLine]
-                )
-            )
-        );
-        _bondDetails.__nextInterestAmount += userBalance;
-        _bondDetails.__nextCapitalAmount += userBalance;
-
-        if (
-            _bondDetails.__nextCapitalAmount == _bondDetails.__issuedAmount &&
-            _bondDetails.__nextInterestAmount == _bondDetails.__issuedAmount
-        ) {
-            _bondDetails.__allClaimsReceived = true;
-        }
-        return interestAmount + capitalAmount;
-    }
-
-    // withdraw coupon (with interest)
-    function withdrawCouponClaim(uint256 _bondId, address _buyer) external {
-        BondParams storage _bondDetails = bondStorage(_bondId);
-        if (!_bondDetails.__allClaimsReceived) {
-            revert NotAllClaimsReceivedForNextPayment();
-        }
-
-        uint256 userBalance = ERC1155Facet(__bond).balanceOf(_buyer, _bondId);
-        uint256 interestAmount = convert(
-            mul(
-                ud60x18(userBalance),
-                ud60x18(
-                    _bondDetails.__netCouponRates[_bondDetails.__currentLine]
-                )
-            )
-        );
-        uint256 tokenAmount = userBalance *
-            _bondDetails.__coupure +
-            interestAmount;
-        ERC20(__currencyAddress).transfer(_buyer, tokenAmount);
-        _bondDetails.__nextInterestAmount -= userBalance;
-        _bondDetails.__nextCapitalAmount -= userBalance;
-
-        if (
-            _bondDetails.__nextInterestAmount == 0 &&
-            _bondDetails.__nextCapitalAmount == 0
-        ) {
-            _bondDetails.__couponStatus[
-                _bondDetails.__currentLine
-            ] = CouponStatus.Executed;
-            emit CouponStatusChanged(_bondId, _bondDetails.__currentLine);
-            _bondDetails.__currentLine += 1;
-            _bondDetails.__allClaimsReceived = false;
-        }
-    }
-
     function getSelectors() external pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](19);
+        bytes4[] memory selectors = new bytes4[](15);
         selectors[0] = BondFacet.initializeBond.selector;
         selectors[1] = BondFacet.setCurrencyAddress.selector;
         selectors[2] = BondFacet.editBondParameters.selector;
-        selectors[3] = BondFacet.cancel.selector;
-        selectors[4] = BondFacet.setBalloonRate.selector;
-        selectors[5] = BondFacet.setCapitalAmortizationFreeDuration.selector;
-        selectors[6] = BondFacet.setGracePeriodDuration.selector;
-        selectors[7] = BondFacet.getCouponsDates.selector;
-        selectors[8] = BondFacet.getCouponsRates.selector;
-        selectors[9] = BondFacet.reserve.selector;
-        selectors[10] = BondFacet.pauseCampaign.selector;
-        selectors[11] = BondFacet.unpauseCampaign.selector;
-        selectors[12] = BondFacet.rescindReservation.selector;
-        selectors[13] = BondFacet.claimCoupon.selector;
-        selectors[14] = BondFacet.withdrawCouponClaim.selector;
-        selectors[15] = BondFacet.transferBond.selector;
-        selectors[16] = BondFacet.withdrawBondsPurchased.selector;
-        selectors[17] = BondFacet.terminate.selector;
-        selectors[18] = BondFacet.issueBond.selector;
+        selectors[3] = BondFacet.setBalloonRate.selector;
+        selectors[4] = BondFacet.setCapitalAmortizationFreeDuration.selector;
+        selectors[5] = BondFacet.setGracePeriodDuration.selector;
+        selectors[6] = BondFacet.reserve.selector;
+        selectors[7] = BondFacet.pauseCampaign.selector;
+        selectors[8] = BondFacet.unpauseCampaign.selector;
+        selectors[9] = BondFacet.rescindReservation.selector;
+        selectors[10] = BondFacet.transferBond.selector;
+        selectors[11] = BondFacet.withdrawBondsPurchased.selector;
+        selectors[12] = BondFacet.issueBond.selector;
+        selectors[13] = BondFacet.onERC1155Received.selector;
+        selectors[14] = BondFacet.onERC1155BatchReceived.selector;
 
         return selectors;
     }

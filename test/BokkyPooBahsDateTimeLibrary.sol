@@ -7,7 +7,7 @@ import "../contracts/libraries/BokkyPooBahsDateTimeLibrary.sol";
 contract BokkyPooBahsDateTimeLibraryTest is Test {
     using BokkyPooBahsDateTimeLibrary for uint256;
 
-    function testTimestampFromDate() public {
+    function testTimestampFromDate() public pure {
         uint256 year = 2023;
         uint256 month = 10;
         uint256 day = 5;
@@ -25,7 +25,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         );
     }
 
-    function testGetYearMonthDay() public {
+    function testGetYearMonthDay() public pure {
         uint256 year = 2023;
         uint256 month = 10;
         uint256 day = 5;
@@ -42,7 +42,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(expectedDay, day);
     }
 
-    function testGetTimeComponents() public {
+    function testGetTimeComponents() public pure {
         uint256 timestamp = 1696518600; // Unix timestamp for 2023-10-05 15:10:00 UTC
 
         uint256 hour = BokkyPooBahsDateTimeLibrary.getHour(timestamp);
@@ -54,12 +54,12 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(second, 0, "Second extraction is incorrect");
     }
 
-    function testDaysFromDate() public {
+    function testDaysFromDate() public pure {
         uint256 day = BokkyPooBahsDateTimeLibrary._daysFromDate(1970, 1, 2);
         assertEq(day, 1);
     }
 
-    function testDaysToDate() public {
+    function testDaysToDate() public pure {
         (uint256 year, uint256 month, uint256 day) = BokkyPooBahsDateTimeLibrary
             ._daysToDate(1);
         assertEq(year, 1970);
@@ -67,7 +67,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(day, 2);
     }
 
-    function testTimestampFromDateTime() public {
+    function testTimestampFromDateTime() public pure {
         uint256 year = 2023;
         uint256 month = 10;
         uint256 day = 5;
@@ -91,7 +91,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         );
     }
 
-    function testTimestampToDate() public {
+    function testTimestampToDate() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         (uint256 year, uint256 month, uint256 day) = BokkyPooBahsDateTimeLibrary
             .timestampToDate(timestamp);
@@ -100,7 +100,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(day, 5, "Day is incorrect");
     }
 
-    function testTimestampToDateTime() public {
+    function testTimestampToDateTime() public pure {
         uint256 timestamp = 1696518600; // Unix timestamp for 2023-10-05 15:10:00 UTC
         (
             uint256 year,
@@ -118,7 +118,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(second, 0, "Second is incorrect");
     }
 
-    function testIsValidDate() public {
+    function testIsValidDate() public pure {
         uint256 year = 2023;
         uint256 month = 2;
         uint256 day = 29;
@@ -134,7 +134,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertTrue(isValid, "Date validation failed for leap year");
     }
 
-    function testIsValidDateTime() public {
+    function testIsValidDateTime() public pure {
         uint256 year = 2023;
         uint256 month = 10;
         uint256 day = 5;
@@ -163,7 +163,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertFalse(isValid, "DateTime validation failed for invalid second");
     }
 
-    function testIsLeapYear() public {
+    function testIsLeapYear() public pure {
         uint256 timestamp = 1704067200; // Unix timestamp for 2024-01-01 00:00:00 UTC
         bool isLeap = BokkyPooBahsDateTimeLibrary.isLeapYear(timestamp);
         assertTrue(isLeap, "Leap year validation failed for 2024");
@@ -173,7 +173,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertFalse(isLeap, "Leap year validation failed for 2023");
     }
 
-    function testIsWeekDay() public {
+    function testIsWeekDay() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC (Thursday)
         bool isWeekDay = BokkyPooBahsDateTimeLibrary.isWeekDay(timestamp);
         assertTrue(isWeekDay, "Weekday validation failed for Thursday");
@@ -183,7 +183,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertFalse(isWeekDay, "Weekday validation failed for Saturday");
     }
 
-    function testIsWeekEnd() public {
+    function testIsWeekEnd() public pure {
         uint256 timestamp = 1696636800; // Unix timestamp for 2023-10-07 00:00:00 UTC (Saturday)
         bool isWeekEnd = BokkyPooBahsDateTimeLibrary.isWeekEnd(timestamp);
         assertTrue(isWeekEnd, "Weekend validation failed for Saturday");
@@ -193,7 +193,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertFalse(isWeekEnd, "Weekend validation failed for Thursday");
     }
 
-    function testGetDaysInMonth() public {
+    function testGetDaysInMonth() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 daysInMonth = BokkyPooBahsDateTimeLibrary.getDaysInMonth(
             timestamp
@@ -237,13 +237,13 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         );
     }
 
-    function testGetDayOfWeek() public {
+    function testGetDayOfWeek() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 dayOfWeek = BokkyPooBahsDateTimeLibrary.getDayOfWeek(timestamp);
         assertEq(dayOfWeek, 4, "Day of week calculation is incorrect"); // 4 = Thursday
     }
 
-    function testAddDays() public {
+    function testAddDays() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 daysToAdd = 5;
         uint256 expectedTimestamp = 1696896000; // Unix timestamp for 2023-10-10 00:00:00 UTC
@@ -255,7 +255,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(newTimestamp, expectedTimestamp, "Adding days is incorrect");
     }
 
-    function testSubDays() public {
+    function testSubDays() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 daysToSub = 5;
         uint256 expectedTimestamp = 1696032000; // Unix timestamp for 2023-09-30 00:00:00 UTC
@@ -271,7 +271,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         );
     }
 
-    function testAddMonths() public {
+    function testAddMonths() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 monthsToAdd = 3;
         uint256 expectedTimestamp = 1704412800; // Unix timestamp for 2024-01-05 00:00:00 UTC
@@ -283,7 +283,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(newTimestamp, expectedTimestamp, "Adding months is incorrect");
     }
 
-    function testSubMonths() public {
+    function testSubMonths() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 monthsToSub = 3;
         uint256 expectedTimestamp = 1688515200; // Unix timestamp for 2023-07-05 00:00:00 UTC
@@ -299,7 +299,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         );
     }
 
-    function testAddYears() public {
+    function testAddYears() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 yearsToAdd = 2;
         uint256 expectedTimestamp = 1759622400; // Unix timestamp for 2025-10-05 00:00:00 UTC
@@ -311,7 +311,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(newTimestamp, expectedTimestamp, "Adding years is incorrect");
     }
 
-    function testSubYears() public {
+    function testSubYears() public pure {
         uint256 timestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 yearsToSub = 2;
         uint256 expectedTimestamp = 1633392000; // Unix timestamp for 2021-10-05 00:00:00 UTC
@@ -327,7 +327,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         );
     }
 
-    function testDiffDays() public {
+    function testDiffDays() public pure {
         uint256 fromTimestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 toTimestamp = 1696896000; // Unix timestamp for 2023-10-10 00:00:00 UTC
         uint256 diff = BokkyPooBahsDateTimeLibrary.diffDays(
@@ -337,7 +337,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(diff, 5, "Difference in days is incorrect");
     }
 
-    function testDiffMonths() public {
+    function testDiffMonths() public pure {
         uint256 fromTimestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 toTimestamp = 1704240000; // Unix timestamp for 2024-01-05 00:00:00 UTC
         uint256 diff = BokkyPooBahsDateTimeLibrary.diffMonths(
@@ -347,7 +347,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(diff, 3, "Difference in months is incorrect");
     }
 
-    function testDiffYears() public {
+    function testDiffYears() public pure {
         uint256 fromTimestamp = 1696464000; // Unix timestamp for 2023-10-05 00:00:00 UTC
         uint256 toTimestamp = 1762291200; // Unix timestamp for 2025-10-05 00:00:00 UTC
         uint256 diff = BokkyPooBahsDateTimeLibrary.diffYears(
@@ -357,7 +357,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         assertEq(diff, 2, "Difference in years is incorrect");
     }
 
-    function testAddTimeComponents() public {
+    function testAddTimeComponents() public pure {
         uint256 timestamp = 1696518600; // Unix timestamp for 2023-10-05 14:30:00 UTC
 
         // Add hours
@@ -400,7 +400,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         );
     }
 
-    function testSubTimeComponents() public {
+    function testSubTimeComponents() public pure {
         uint256 timestamp = 1696518600; // Unix timestamp for 2023-10-05 14:30:00 UTC
 
         // Subtract hours
@@ -443,7 +443,7 @@ contract BokkyPooBahsDateTimeLibraryTest is Test {
         );
     }
 
-    function testDiffTimeComponents() public {
+    function testDiffTimeComponents() public pure {
         uint256 fromTimestamp = 1696516200; // Unix timestamp for 2023-10-05 14:30:00 UTC
         uint256 toTimestamp = 1696546800; // Unix timestamp for 2023-10-05 23:00:00 UTC
 

@@ -6,6 +6,7 @@ import "forge-std/console.sol";
 import "../contracts/facets/BondFacet.sol";
 import "../contracts/facets/ERC1155Facet.sol";
 import "../contracts/facets/DiamondLoupeFacet.sol";
+import "../contracts/facets/OwnershipFacet.sol";
 import "../contracts/Diamond.sol";
 import "../contracts/upgradeInitializers/DiamondInit.sol";
 import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
@@ -15,6 +16,9 @@ import "../contracts/GenericToken.sol";
 import "../contracts/interfaces/IDiamondLoupe.sol";
 import "../contracts/facets/BondStorage.sol";
 import "../contracts/libraries/LibDiamond.sol";
+import "../contracts/facets/BondReaderFacet.sol";
+import "../contracts/facets/BondManagerFacet.sol";
+import "../contracts/facets/CouponFacet.sol";
 
 contract DiamondBondTest is Test {
     address owner;
@@ -24,9 +28,13 @@ contract DiamondBondTest is Test {
     address erc1155FacetAddress;
     address diamondLoupeFacetAddress;
     address bondFacetAddress;
+    address bondReaderFacetAddress;
+    address ownershipFacetAddress;
+    address bondManagerFacetAddress;
     address payable diamondAddress;
     address diamondInitAddress;
     address genericTokenAddress;
+    address couponFacetAddress;
 
     IDiamondLoupe ILoupe;
 
@@ -49,10 +57,22 @@ contract DiamondBondTest is Test {
         BondFacet bondFacet = new BondFacet();
         bondFacetAddress = address(bondFacet);
 
+        BondReaderFacet bondReaderFacet = new BondReaderFacet();
+        bondReaderFacetAddress = address(bondReaderFacet);
+
+        BondManagerFacet bondManagerFacet = new BondManagerFacet();
+        bondManagerFacetAddress = address(bondManagerFacet);
+
+        CouponFacet couponFacet = new CouponFacet();
+        couponFacetAddress = address(couponFacet);
+
+        OwnershipFacet ownershipFacet = new OwnershipFacet();
+        ownershipFacetAddress = address(ownershipFacet);
+
         GenericToken genericToken = new GenericToken("GenericToken", "GEN");
         genericTokenAddress = address(genericToken);
 
-        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](3);
+        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](7);
 
         cuts[0] = IDiamond.FacetCut({
             facetAddress: erc1155FacetAddress,
@@ -72,6 +92,31 @@ contract DiamondBondTest is Test {
             functionSelectors: bondFacet.getSelectors()
         });
 
+        cuts[3] = IDiamond.FacetCut({
+            facetAddress: ownershipFacetAddress,
+            action: IDiamond.FacetCutAction.Add,
+            functionSelectors: ownershipFacet.getSelectorsOwnership()
+        });
+
+        cuts[4] = IDiamond.FacetCut({
+            facetAddress: bondReaderFacetAddress,
+            action: IDiamond.FacetCutAction.Add,
+            functionSelectors: bondReaderFacet.getSelectors()
+        });
+
+        cuts[5] = IDiamond.FacetCut({
+            facetAddress: bondManagerFacetAddress,
+            action: IDiamond.FacetCutAction.Add,
+            functionSelectors: bondManagerFacet.getSelectors()
+        });
+
+         cuts[6] = IDiamond.FacetCut({
+            facetAddress: couponFacetAddress,
+            action: IDiamond.FacetCutAction.Add,
+            functionSelectors: couponFacet.getSelectors()
+        });
+
+
         DiamondArgs memory da = DiamondArgs({
             owner: owner,
             init: diamondInitAddress,
@@ -80,6 +125,8 @@ contract DiamondBondTest is Test {
 
         Diamond diamond = new Diamond(cuts, da);
         diamondAddress = payable(address(diamond));
+
+        OwnershipFacet(diamondAddress).initializeOwner(owner);
 
         // Set the currency address in BondFacet
         BondFacet(diamondAddress).setCurrencyAddress(genericTokenAddress);
@@ -123,14 +170,13 @@ contract DiamondBondTest is Test {
         Diamond(diamondAddress).diamondCut(cuts, address(0), "");
         address[] memory addresses;
         addresses = DiamondLoupeFacet(diamondAddress).facetAddresses();
-        assertEq(addresses[0], bondFacetAddress);
-        assertEq(addresses[1], diamondLoupeFacetAddress);
+        assertEq(addresses.length, 6);
         vm.prank(owner);
         vm.expectRevert();
         ERC1155Facet(diamondAddress).balanceOf(owner, 1);
     }
 
-    function testGetCouponDates() public {
+    function testGetCouponDates() public view {
         uint256[] memory year;
         uint256[] memory month;
         uint256[] memory day;
@@ -138,7 +184,7 @@ contract DiamondBondTest is Test {
         uint256[2] memory expectedMonth = [uint256(1), uint256(1)];
         uint256[2] memory expectedDay = [uint256(1), uint256(1)];
 
-        (day, month, year) = BondFacet(diamondAddress).getCouponsDates(1);
+        (day, month, year) = BondReaderFacet(diamondAddress).getCouponsDates(1);
         for (uint i = 0; i < year.length; i++) {
             assertEq(year[i], expectedYear[i]);
             assertEq(month[i], expectedMonth[i]);
@@ -146,12 +192,12 @@ contract DiamondBondTest is Test {
         }
     }
 
-    function testGetCouponRates() public {
+    function testGetCouponRates() public view {
         uint256[] memory gross;
         uint256[] memory net;
         uint256[] memory capital;
         uint256[] memory remainingCapital;
-        (gross, net, capital, remainingCapital) = BondFacet(diamondAddress)
+        (gross, net, capital, remainingCapital) = BondReaderFacet(diamondAddress)
             .getCouponsRates(1);
     }
 
@@ -562,8 +608,8 @@ contract DiamondBondTest is Test {
         });
         BondFacet(diamondAddress).initializeBond(params);
         vm.expectEmit(true, true, true, true);
-        emit BondFacet.Cancelled(2);
-        BondFacet(diamondAddress).cancel(2);
+        emit BondManagerFacet.Cancelled(2);
+        BondManagerFacet(diamondAddress).cancel(2);
     }
 
     function testWithdrawBonds() public {
@@ -600,12 +646,16 @@ contract DiamondBondTest is Test {
         BondFacet(diamondAddress).issueBond(1, 0);
         GenericToken(genericTokenAddress).mint(investor, 10000 * 10 ** 18);
         GenericToken(genericTokenAddress).mint(issuer, 10000 * 10 ** 18);
-        BondFacet(diamondAddress).withdrawBondsPurchased("bp1", 1, investor);
-        BondFacet(diamondAddress).claimCoupon(1, investor);
-        vm.startPrank(issuer);
-        GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
-        BondFacet(diamondAddress).withdrawCouponClaim(1, investor);
         vm.stopPrank();
+        vm.startPrank(investor);
+        BondFacet(diamondAddress).withdrawBondsPurchased("bp1", 1, investor);
+        CouponFacet(diamondAddress).claimCoupon(1, investor);
+        vm.stopPrank();
+        vm.prank(issuer);
+        GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
+        vm.prank(issuer);
+        CouponFacet(diamondAddress).withdrawCouponClaim(1, investor);
+
     }
 
     function testWithdrawCouponBeforeAllClaimsReceived() public {
@@ -624,11 +674,11 @@ contract DiamondBondTest is Test {
         GenericToken(genericTokenAddress).mint(issuer, 10000 * 10 ** 18);
         BondFacet(diamondAddress).withdrawBondsPurchased("bp1", 1, investor);
         BondFacet(diamondAddress).withdrawBondsPurchased("bp2", 1, investor2);
-        BondFacet(diamondAddress).claimCoupon(1, investor);
+        CouponFacet(diamondAddress).claimCoupon(1, investor);
         vm.startPrank(issuer);
         GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
         vm.expectRevert();
-        BondFacet(diamondAddress).withdrawCouponClaim(1, investor);
+        CouponFacet(diamondAddress).withdrawCouponClaim(1, investor);
         vm.stopPrank();
     }
 
@@ -651,7 +701,7 @@ contract DiamondBondTest is Test {
         assertEq(diamondSelectors[0], facetSelectors[0]);
     }
 
-    function testLoupeFacets() public {
+    function testLoupeFacets() public view {
         IDiamondLoupe.Facet memory facet = IDiamondLoupe.Facet({
             facetAddress: erc1155FacetAddress,
             functionSelectors: ERC1155Facet(erc1155FacetAddress).getSelectors()
@@ -674,7 +724,7 @@ contract DiamondBondTest is Test {
         assertEq(facetAddress, erc1155FacetAddress);
     }
 
-    function testFacetLoupeSupportsInterface() public {
+    function testFacetLoupeSupportsInterface() public view {
         bytes4 interfaceIdERC165 = type(IERC165).interfaceId;
         assertTrue(
             DiamondLoupeFacet(diamondAddress).supportsInterface(
@@ -690,7 +740,7 @@ contract DiamondBondTest is Test {
 
     function testFallback() public {
         bytes memory data = abi.encodeWithSignature("nonExistentFunction()");
-        (bool success, bytes memory result) = address(diamondAddress).call(
+        (bool success, ) = address(diamondAddress).call(
             data
         );
         assertFalse(
@@ -743,6 +793,8 @@ contract DiamondBondTest is Test {
         );
 
         // Transfer the bond
+        vm.prank(investor);
+        ERC1155Facet(diamondAddress).setApprovalForAll(diamondAddress, true);
         vm.prank(owner);
         BondFacet(diamondAddress).transferBond(
             "transfer1",
@@ -766,7 +818,7 @@ contract DiamondBondTest is Test {
     function testTerminateBond() public {
         vm.prank(owner);
         vm.expectEmit(true, true, true, true);
-        emit BondFacet.BondTerminated(1);
-        BondFacet(diamondAddress).terminate(1);
+        emit BondManagerFacet.BondTerminated(1);
+        BondManagerFacet(diamondAddress).terminate(1);
     }
 }

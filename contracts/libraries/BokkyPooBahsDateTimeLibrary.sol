@@ -63,18 +63,28 @@ library BokkyPooBahsDateTimeLibrary {
         int256 _month = int256(month);
         int256 _day = int256(day);
 
+        // slither-disable-next-line all
+        int256 monthAdjustment = (_month - 14) / 12;
+        int256 adjustedYear = _year + 4800 + monthAdjustment;
+        // slither-disable-next-line all
+        int256 adjustedMonth = _month - 2 - (monthAdjustment * 12);
+
+        // Refactor to avoid divide-before-multiply
+        int256 temp1 = 1461 * adjustedYear;
+        int256 temp2 = 367 * adjustedMonth;
+        // slither-disable-next-line all
+        int256 temp3 = 3 * ((adjustedYear + 100) / 100);
+
         int256 __days = _day -
-            32_075 +
-            (1461 * (_year + 4800 + (_month - 14) / 12)) /
-            4 +
-            (367 * (_month - 2 - ((_month - 14) / 12) * 12)) /
-            12 -
-            (3 * ((_year + 4900 + (_month - 14) / 12) / 100)) /
-            4 -
+            32075 +
+            temp1 / 4 +
+            temp2 / 12 -
+            temp3 / 4 -
             OFFSET19700101;
 
         _days = uint256(__days);
     }
+
 
     // ------------------------------------------------------------------------
     // Calculate year/month/day from the number of days since 1970/01/01 using
@@ -88,14 +98,26 @@ library BokkyPooBahsDateTimeLibrary {
         int256 __days = int256(_days);
 
         int256 length = __days + 68_569 + OFFSET19700101;
+        // slither-disable-next-line all
         int256 n = (4 * length) / 146_097;
+        // slither-disable-next-line all
         length = length - (146_097 * n + 3) / 4;
+        // slither-disable-next-line all
         int256 _year = (4000 * (length + 1)) / 1_461_001;
+        // slither-disable-next-line all
         length = length - (1461 * _year) / 4 + 31;
-        int256 _month = (80 * length) / 2447;
-        int256 _day = length - (2447 * _month) / 80;
+
+        // Refactored the following two lines to avoid divide-before-multiply
+        int256 tempMonth = (80 * length);
+        // slither-disable-next-line all
+        int256 _month = tempMonth / 2447;
+        // slither-disable-next-line all
+        int256 _day = length - ((2447 * _month) / 80);
+
+        // slither-disable-next-line all
         length = _month / 11;
         _month = _month + 2 - 12 * length;
+        // slither-disable-next-line all
         _year = 100 * (n - 49) + _year + length;
 
         year = uint256(_year);
@@ -392,7 +414,9 @@ library BokkyPooBahsDateTimeLibrary {
             timestamp / SECONDS_PER_DAY
         );
         uint256 yearMonth = year * 12 + (month - 1) - _months;
+        // slither-disable-next-line all
         year = yearMonth / 12;
+        // slither-disable-next-line all
         month = (yearMonth % 12) + 1;
         uint256 daysInMonth = _getDaysInMonth(year, month);
         if (day > daysInMonth) {

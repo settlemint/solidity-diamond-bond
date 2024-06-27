@@ -5,11 +5,11 @@ import "forge-std/Test.sol";
 import "../contracts/facets/ERC1155Facet.sol";
 
 contract ERC1155FacetTest is Test {
-    ERC1155Facet erc1155;
-    address owner;
-    address user1;
-    address user2;
-    address operator;
+    ERC1155Facet private erc1155;
+    address private owner;
+    address private user1;
+    address private user2;
+    address private operator;
 
     function setUp() public {
         owner = vm.addr(1);
@@ -26,7 +26,7 @@ contract ERC1155FacetTest is Test {
         uint256 amount = 100;
 
         vm.prank(owner);
-        erc1155.mint(user1, tokenId, amount);
+        erc1155.mint(user1, tokenId, amount, "");
 
         uint256 user1Balance = erc1155.balanceOf(user1, tokenId);
         assertEq(user1Balance, amount);
@@ -37,7 +37,7 @@ contract ERC1155FacetTest is Test {
         uint256 amount = 100;
 
         vm.prank(owner);
-        erc1155.mint(user1, tokenId, amount);
+        erc1155.mint(user1, tokenId, amount, "");
 
         vm.prank(user1);
         erc1155.burn(user1, tokenId, amount);
@@ -51,7 +51,7 @@ contract ERC1155FacetTest is Test {
         uint256 amount = 100;
 
         vm.prank(owner);
-        erc1155.mint(user1, tokenId, amount);
+        erc1155.mint(user1, tokenId, amount,"");
 
         vm.prank(user1);
         erc1155.safeTransferFrom(user1, user2, tokenId, amount, "");
@@ -70,9 +70,10 @@ contract ERC1155FacetTest is Test {
         amounts[0] = 100;
         amounts[1] = 200;
 
-        vm.prank(owner);
-        erc1155.mint(user1, tokenIds[0], amounts[0]);
-        erc1155.mint(user1, tokenIds[1], amounts[1]);
+        vm.startPrank(owner);
+        erc1155.mint(user1, tokenIds[0], amounts[0],"");
+        erc1155.mint(user1, tokenIds[1], amounts[1],"");
+        vm.stopPrank();
 
         vm.prank(user1);
         erc1155.safeBatchTransferFrom(user1, user2, tokenIds, amounts, "");
@@ -89,7 +90,7 @@ contract ERC1155FacetTest is Test {
 
     function testSetApprovalForAll() public {
         vm.prank(user1);
-        erc1155.setApprovalForAll(user1, operator, true);
+        erc1155.setApprovalForAll(operator, true);
 
         bool isApproved = erc1155.isApprovedForAll(user1, operator);
         assertTrue(isApproved);
@@ -102,9 +103,11 @@ contract ERC1155FacetTest is Test {
         uint256 tokenId1 = 1;
         uint256 tokenId2 = 2;
 
-        erc1155.mint(owner, tokenId1, 100);
-        erc1155.mint(user1, tokenId1, 50);
-        erc1155.mint(user2, tokenId2, 200);
+        vm.startPrank(owner);
+        erc1155.mint(owner, tokenId1, 100, "");
+        erc1155.mint(user1, tokenId1, 50,"");
+        erc1155.mint(user2, tokenId2, 200,"");
+        vm.stopPrank();
 
         accounts[0] = owner;
         accounts[1] = user1;
@@ -129,11 +132,11 @@ contract ERC1155FacetTest is Test {
         );
     }
 
-    function testSupportsInterface() public {
+    function testSupportsInterface() public view {
         // ERC165 Interface ID for IERC165
         bytes4 interfaceIdERC165 = type(IERC165).interfaceId;
         // ERC165 Interface ID for IERC1155v2
-        bytes4 interfaceIdERC1155v2 = type(IERC1155v2).interfaceId;
+        bytes4 interfaceIdERC1155v2 = type(IERC1155).interfaceId;
         // ERC165 Interface ID for non-supported interface (example)
         bytes4 interfaceIdNonSupported = 0xffffffff;
 
