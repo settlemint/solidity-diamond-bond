@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract BondStorage {
     enum BondStatus {
@@ -87,12 +87,8 @@ contract BondStorage {
         address __issuer;
     }
 
-    function bondStorage(
-        uint256 slot
-    ) internal pure returns (BondParams storage bs) {
-        bytes32 bsSlot = keccak256(
-            abi.encodePacked("storage.bond", Strings.toString(slot))
-        );
+    function bondStorage(uint256 slot) internal pure returns (BondParams storage bs) {
+        bytes32 bsSlot = keccak256(abi.encodePacked("storage.bond", Strings.toString(slot)));
         assembly {
             bs.slot := bsSlot
         }

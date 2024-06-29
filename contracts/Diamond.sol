@@ -8,9 +8,8 @@ pragma solidity ^0.8.24;
 //* Implementation of a diamond.
 //******************************************************************************/
 
-import {LibDiamond} from "./libraries/LibDiamond.sol";
-import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
-import {IERC173} from "./interfaces/IERC173.sol";
+import { LibDiamond } from "./libraries/LibDiamond.sol";
+import { IDiamondCut } from "./interfaces/IDiamondCut.sol";
 
 // When no function exists for function called
 error FunctionNotFound(bytes4 _functionSelector);
@@ -25,21 +24,14 @@ struct DiamondArgs {
 }
 
 contract Diamond {
-    constructor(
-        IDiamondCut.FacetCut[] memory _diamondCut,
-        DiamondArgs memory _args
-    ) payable {
+    constructor(IDiamondCut.FacetCut[] memory _diamondCut, DiamondArgs memory _args) payable {
         LibDiamond.setContractOwner(_args.owner);
         LibDiamond.diamondCut(_diamondCut, _args.init, _args.initCalldata);
 
         // Code can be added here to perform actions and set state variables.
     }
 
-    function diamondCut(
-        IDiamondCut.FacetCut[] memory _diamondCut,
-        address _init,
-        bytes memory _calldata
-    ) external {
+    function diamondCut(IDiamondCut.FacetCut[] memory _diamondCut, address _init, bytes memory _calldata) external {
         LibDiamond.diamondCut(_diamondCut, _init, _calldata);
     }
 
@@ -53,9 +45,7 @@ contract Diamond {
             ds.slot := position
         }
         // get facet from function selector
-        address facet = ds
-            .facetAddressAndSelectorPosition[msg.sig]
-            .facetAddress;
+        address facet = ds.facetAddressAndSelectorPosition[msg.sig].facetAddress;
         if (facet == address(0)) {
             revert FunctionNotFound(msg.sig);
         }
@@ -69,14 +59,10 @@ contract Diamond {
             returndatacopy(0, 0, returndatasize())
             // return any return value or error back to the caller
             switch result
-            case 0 {
-                revert(0, returndatasize())
-            }
-            default {
-                return(0, returndatasize())
-            }
+            case 0 { revert(0, returndatasize()) }
+            default { return(0, returndatasize()) }
         }
     }
 
-    receive() external payable {}
+    receive() external payable { }
 }

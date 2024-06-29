@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ERC165, IERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { ERC165, IERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import { IERC1155Receiver } from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
 contract ERC1155Facet is Context, ERC165, IERC1155 {
-
     /**
      * @dev Indicates a failure with the token `receiver`. Used in transfers.
      * @param receiver Address to which tokens are being transferred.
@@ -29,7 +28,10 @@ contract ERC1155Facet is Context, ERC165, IERC1155 {
         return _balances[id][account];
     }
 
-    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)
+    function balanceOfBatch(
+        address[] calldata accounts,
+        uint256[] calldata ids
+    )
         external
         view
         override
@@ -60,10 +62,12 @@ contract ERC1155Facet is Context, ERC165, IERC1155 {
         uint256 id,
         uint256 amount,
         bytes calldata data
-    ) external override {
+    )
+        external
+        override
+    {
         require(
-            from == _msgSender() || _operatorApprovals[from][_msgSender()],
-            "ERC1155: caller is not owner nor approved"
+            from == _msgSender() || _operatorApprovals[from][_msgSender()], "ERC1155: caller is not owner nor approved"
         );
         _safeTransferFrom(from, to, id, amount, data);
     }
@@ -74,7 +78,10 @@ contract ERC1155Facet is Context, ERC165, IERC1155 {
         uint256[] calldata ids,
         uint256[] calldata amounts,
         bytes calldata data
-    ) external override {
+    )
+        external
+        override
+    {
         require(
             from == _msgSender() || _operatorApprovals[from][_msgSender()],
             "ERC1155: transfer caller is not owner nor approved"
@@ -82,13 +89,7 @@ contract ERC1155Facet is Context, ERC165, IERC1155 {
         _safeBatchTransferFrom(from, to, ids, amounts, data);
     }
 
-    function _safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) internal {
+    function _safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes memory data) internal {
         require(to != address(0), "ERC1155: transfer to the zero address");
 
         address operator = _msgSender();
@@ -110,7 +111,9 @@ contract ERC1155Facet is Context, ERC165, IERC1155 {
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) internal {
+    )
+        internal
+    {
         require(ids.length == amounts.length, "ERC1155: ids and amounts length mismatch");
         require(to != address(0), "ERC1155: transfer to the zero address");
 
@@ -146,7 +149,9 @@ contract ERC1155Facet is Context, ERC165, IERC1155 {
         uint256 id,
         uint256 value,
         bytes memory data
-    ) private {
+    )
+        private
+    {
         if (to.code.length > 0) {
             try IERC1155Receiver(to).onERC1155Received(operator, from, id, value, data) returns (bytes4 response) {
                 if (response != IERC1155Receiver.onERC1155Received.selector) {
@@ -174,11 +179,12 @@ contract ERC1155Facet is Context, ERC165, IERC1155 {
         uint256[] memory ids,
         uint256[] memory values,
         bytes memory data
-    ) private {
+    )
+        private
+    {
         if (to.code.length > 0) {
-            try IERC1155Receiver(to).onERC1155BatchReceived(operator, from, ids, values, data) returns (
-                bytes4 response
-            ) {
+            try IERC1155Receiver(to).onERC1155BatchReceived(operator, from, ids, values, data) returns (bytes4 response)
+            {
                 if (response != IERC1155Receiver.onERC1155BatchReceived.selector) {
                     // Tokens rejected
                     revert ERC1155InvalidReceiver(to);
@@ -212,8 +218,7 @@ contract ERC1155Facet is Context, ERC165, IERC1155 {
     function burn(address from, uint256 id, uint256 amount) external {
         require(from != address(0), "ERC1155: burn from the zero address");
         require(
-            from == _msgSender() || _operatorApprovals[from][_msgSender()],
-            "ERC1155: caller is not owner nor approved"
+            from == _msgSender() || _operatorApprovals[from][_msgSender()], "ERC1155: caller is not owner nor approved"
         );
 
         uint256 fromBalance = _balances[id][from];

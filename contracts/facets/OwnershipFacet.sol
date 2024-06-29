@@ -13,8 +13,8 @@ contract OwnershipFacet {
         os.owner = _newOwner;
     }
 
-    function setOwner(address _newOwner) internal onlyOwner{
-      OwnershipStorage storage os = ownershipStorage();
+    function setOwner(address _newOwner) internal onlyOwner {
+        OwnershipStorage storage os = ownershipStorage();
         os.owner = _newOwner;
     }
 

@@ -15,11 +15,7 @@ contract DiamondTestContract {
         return LibDiamond.contractOwner();
     }
 
-    function diamondCut(
-        IDiamondCut.FacetCut[] memory _diamondCut,
-        address _init,
-        bytes memory _calldata
-    ) external {
+    function diamondCut(IDiamondCut.FacetCut[] memory _diamondCut, address _init, bytes memory _calldata) external {
         LibDiamond.diamondCut(_diamondCut, _init, _calldata);
     }
 

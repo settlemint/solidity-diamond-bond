@@ -9,8 +9,8 @@ import "../contracts/facets/DiamondLoupeFacet.sol";
 import "../contracts/facets/OwnershipFacet.sol";
 import "../contracts/Diamond.sol";
 import "../contracts/upgradeInitializers/DiamondInit.sol";
-import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
-import {BondInitParams} from "../contracts/libraries/StructBondInit.sol";
+import { IDiamondCut } from "../contracts/interfaces/IDiamondCut.sol";
+import { BondInitParams } from "../contracts/libraries/StructBondInit.sol";
 import "../contracts/interfaces/IDiamond.sol";
 import "../contracts/GenericToken.sol";
 import "../contracts/interfaces/IDiamondLoupe.sol";
@@ -110,12 +110,11 @@ contract DiamondBondTest is Test {
             functionSelectors: bondManagerFacet.getSelectors()
         });
 
-         cuts[6] = IDiamond.FacetCut({
+        cuts[6] = IDiamond.FacetCut({
             facetAddress: couponFacetAddress,
             action: IDiamond.FacetCutAction.Add,
             functionSelectors: couponFacet.getSelectors()
         });
-
 
         DiamondArgs memory da = DiamondArgs({
             owner: owner,
@@ -141,7 +140,7 @@ contract DiamondBondTest is Test {
             __periodicity: uint256(BondStorage.Periodicity.Annual),
             __duration: 24,
             __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
+            __campaignMaxAmount: 100_000,
             __campaignMinAmount: 1000,
             __maxAmountPerInvestor: 5,
             __campaignStartDate: 0,
@@ -185,7 +184,7 @@ contract DiamondBondTest is Test {
         uint256[2] memory expectedDay = [uint256(1), uint256(1)];
 
         (day, month, year) = BondReaderFacet(diamondAddress).getCouponsDates(1);
-        for (uint i = 0; i < year.length; i++) {
+        for (uint256 i = 0; i < year.length; i++) {
             assertEq(year[i], expectedYear[i]);
             assertEq(month[i], expectedMonth[i]);
             assertEq(day[i], expectedDay[i]);
@@ -197,19 +196,13 @@ contract DiamondBondTest is Test {
         uint256[] memory net;
         uint256[] memory capital;
         uint256[] memory remainingCapital;
-        (gross, net, capital, remainingCapital) = BondReaderFacet(diamondAddress)
-            .getCouponsRates(1);
+        (gross, net, capital, remainingCapital) = BondReaderFacet(diamondAddress).getCouponsRates(1);
     }
 
     function testFallbackFunction() public {
         // Test the fallback function by calling a non-existent function
-        (bool success, ) = address(diamondAddress).call(
-            abi.encodeWithSignature("nonExistentFunction()")
-        );
-        assertFalse(
-            success,
-            "Fallback function should revert for non-existent function"
-        );
+        (bool success,) = address(diamondAddress).call(abi.encodeWithSignature("nonExistentFunction()"));
+        assertFalse(success, "Fallback function should revert for non-existent function");
     }
 
     function testEditBondParameters() public {
@@ -223,7 +216,7 @@ contract DiamondBondTest is Test {
             __periodicity: uint256(BondStorage.Periodicity.Annual),
             __duration: 24,
             __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
+            __campaignMaxAmount: 100_000,
             __campaignMinAmount: 1000,
             __maxAmountPerInvestor: 5,
             __campaignStartDate: 0,
@@ -250,7 +243,7 @@ contract DiamondBondTest is Test {
             __periodicity: uint256(BondStorage.Periodicity.Monthly),
             __duration: 24,
             __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
+            __campaignMaxAmount: 100_000,
             __campaignMinAmount: 1000,
             __maxAmountPerInvestor: 5,
             __campaignStartDate: 0,
@@ -276,33 +269,25 @@ contract DiamondBondTest is Test {
         params.__periodicity = uint256(BondStorage.Periodicity.Monthly);
         params.__balloonRateNum = 10;
         params.__balloonRateDen = 100;
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.Balloon
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.Balloon);
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 5;
         params.__periodicity = uint256(BondStorage.Periodicity.Monthly);
         params.__gracePeriodDuration = 2;
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.GracePeriod
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.GracePeriod);
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 6;
         params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
         params.__gracePeriodDuration = 3;
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.GracePeriod
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.GracePeriod);
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 7;
         params.__periodicity = uint256(BondStorage.Periodicity.Annual);
         params.__gracePeriodDuration = 12;
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.GracePeriod
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.GracePeriod);
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 8;
@@ -317,35 +302,27 @@ contract DiamondBondTest is Test {
 
         params.__bondId = 10;
         params.__periodicity = uint256(BondStorage.Periodicity.Annual);
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.WithCapitalAmortizationFreePeriod
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.WithCapitalAmortizationFreePeriod);
         params.__capitalAmortizationDuration = 12;
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 11;
         params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.WithCapitalAmortizationFreePeriod
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.WithCapitalAmortizationFreePeriod);
         params.__capitalAmortizationDuration = 2;
         vm.expectRevert();
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 12;
         params.__periodicity = uint256(BondStorage.Periodicity.Annual);
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.WithCapitalAmortizationFreePeriod
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.WithCapitalAmortizationFreePeriod);
         params.__capitalAmortizationDuration = 11;
         vm.expectRevert();
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 13;
         params.__periodicity = uint256(BondStorage.Periodicity.Annual);
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.Bullet
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.Bullet);
         params.__capitalAmortizationDuration = 0;
 
         params.__duration = 11;
@@ -354,34 +331,26 @@ contract DiamondBondTest is Test {
 
         params.__bondId = 14;
         params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.Bullet
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.Bullet);
         params.__duration = 11;
         vm.expectRevert();
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 15;
         params.__periodicity = uint256(BondStorage.Periodicity.Annual);
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.Degressive
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.Degressive);
         params.__duration = 24;
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 16;
         params.__periodicity = uint256(BondStorage.Periodicity.Quarterly);
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.Degressive
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.Degressive);
         params.__duration = 24;
         BondFacet(diamondAddress).initializeBond(params);
 
         params.__bondId = 17;
         params.__periodicity = uint256(BondStorage.Periodicity.Monthly);
-        params.__methodOfRepayment = uint256(
-            BondStorage.MethodOfRepayment.Degressive
-        );
+        params.__methodOfRepayment = uint256(BondStorage.MethodOfRepayment.Degressive);
         params.__duration = 24;
         BondFacet(diamondAddress).initializeBond(params);
 
@@ -399,7 +368,7 @@ contract DiamondBondTest is Test {
             __periodicity: uint256(BondStorage.Periodicity.Annual),
             __duration: 24,
             __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
+            __campaignMaxAmount: 100_000,
             __campaignMinAmount: 1000,
             __maxAmountPerInvestor: 5,
             __campaignStartDate: 0,
@@ -420,12 +389,7 @@ contract DiamondBondTest is Test {
     function testReserveBonds() public {
         uint256 reserveAmount = 1;
         vm.prank(investor);
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            1,
-            reserveAmount,
-            investor
-        );
+        BondFacet(diamondAddress).reserve("bondPurchaseId", 1, reserveAmount, investor);
     }
 
     function testReserveBondsBeforeOrAfterCampaign() public {
@@ -439,7 +403,7 @@ contract DiamondBondTest is Test {
             __periodicity: uint256(BondStorage.Periodicity.Annual),
             __duration: 24,
             __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
+            __campaignMaxAmount: 100_000,
             __campaignMinAmount: 1000,
             __maxAmountPerInvestor: 5,
             __campaignStartDate: 2,
@@ -456,38 +420,18 @@ contract DiamondBondTest is Test {
         uint256 reserveAmount = 1;
         vm.prank(investor);
         vm.expectRevert();
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            2,
-            reserveAmount,
-            investor
-        );
-        vm.warp(4000000000000000);
+        BondFacet(diamondAddress).reserve("bondPurchaseId", 2, reserveAmount, investor);
+        vm.warp(4_000_000_000_000_000);
         vm.expectRevert();
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            2,
-            reserveAmount,
-            investor
-        );
+        BondFacet(diamondAddress).reserve("bondPurchaseId", 2, reserveAmount, investor);
     }
 
     function testReserveMoreThanMax() public {
         uint256 reserveAmount = 5;
         vm.startPrank(investor);
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            1,
-            reserveAmount,
-            investor
-        );
+        BondFacet(diamondAddress).reserve("bondPurchaseId", 1, reserveAmount, investor);
         vm.expectRevert();
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            1,
-            reserveAmount,
-            investor
-        );
+        BondFacet(diamondAddress).reserve("bondPurchaseId", 1, reserveAmount, investor);
     }
 
     function testReserveWhenNotAvailable() public {
@@ -502,7 +446,7 @@ contract DiamondBondTest is Test {
             __periodicity: uint256(BondStorage.Periodicity.Annual),
             __duration: 24,
             __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
+            __campaignMaxAmount: 100_000,
             __campaignMinAmount: 1000,
             __maxAmountPerInvestor: 100,
             __campaignStartDate: 0,
@@ -517,20 +461,10 @@ contract DiamondBondTest is Test {
         BondFacet(diamondAddress).initializeBond(params);
         uint256 reserveAmount = 100;
         vm.startPrank(investor);
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            bondId,
-            reserveAmount,
-            investor
-        );
+        BondFacet(diamondAddress).reserve("bondPurchaseId", bondId, reserveAmount, investor);
         vm.startPrank(investor2);
         vm.expectRevert();
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId2",
-            bondId,
-            reserveAmount,
-            investor2
-        );
+        BondFacet(diamondAddress).reserve("bondPurchaseId2", bondId, reserveAmount, investor2);
     }
 
     function testReserveAndRescind() public {
@@ -538,18 +472,9 @@ contract DiamondBondTest is Test {
         // Reserve bonds
         uint256 reserveAmount = 1;
         vm.prank(investor);
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            1,
-            reserveAmount,
-            investor
-        );
+        BondFacet(diamondAddress).reserve("bondPurchaseId", 1, reserveAmount, investor);
         vm.prank(investor);
-        BondFacet(diamondAddress).rescindReservation(
-            "bondPurchaseId",
-            1,
-            investor
-        );
+        BondFacet(diamondAddress).rescindReservation("bondPurchaseId", 1, investor);
     }
 
     function testIssueBonds() public {
@@ -559,12 +484,7 @@ contract DiamondBondTest is Test {
         // Reserve bonds
         uint256 reserveAmount = 1;
         vm.prank(investor);
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            1,
-            reserveAmount,
-            investor
-        );
+        BondFacet(diamondAddress).reserve("bondPurchaseId", 1, reserveAmount, investor);
         vm.prank(owner);
         BondFacet(diamondAddress).issueBond(1, 0);
     }
@@ -578,7 +498,7 @@ contract DiamondBondTest is Test {
 
     function testBuyingAfterCampaignEnds() public {
         vm.startPrank(investor);
-        vm.warp(2000000000);
+        vm.warp(2_000_000_000);
         vm.expectRevert();
         BondFacet(diamondAddress).reserve("bondPurchaseId", 1, 1, investor);
     }
@@ -594,7 +514,7 @@ contract DiamondBondTest is Test {
             __periodicity: uint256(BondStorage.Periodicity.Annual),
             __duration: 24,
             __methodOfRepayment: uint256(BondStorage.MethodOfRepayment.Bullet),
-            __campaignMaxAmount: 100000,
+            __campaignMaxAmount: 100_000,
             __campaignMinAmount: 1000,
             __maxAmountPerInvestor: 5000,
             __campaignStartDate: 0,
@@ -616,12 +536,7 @@ contract DiamondBondTest is Test {
         // Reserve bonds
         uint256 reserveAmount = 1;
         vm.prank(investor);
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            1,
-            reserveAmount,
-            investor
-        );
+        BondFacet(diamondAddress).reserve("bondPurchaseId", 1, reserveAmount, investor);
         vm.prank(owner);
         BondFacet(diamondAddress).issueBond(1, 0);
         GenericToken(genericTokenAddress).mint(investor, 1000 * 10 ** 18);
@@ -630,11 +545,7 @@ contract DiamondBondTest is Test {
 
         // Withdraw bonds
         vm.prank(owner);
-        BondFacet(diamondAddress).withdrawBondsPurchased(
-            "bondPurchaseId",
-            1,
-            investor
-        );
+        BondFacet(diamondAddress).withdrawBondsPurchased("bondPurchaseId", 1, investor);
     }
 
     function testClaimAndWithdrawCoupon() public {
@@ -644,8 +555,8 @@ contract DiamondBondTest is Test {
         vm.stopPrank();
         vm.startPrank(owner);
         BondFacet(diamondAddress).issueBond(1, 0);
-        GenericToken(genericTokenAddress).mint(investor, 10000 * 10 ** 18);
-        GenericToken(genericTokenAddress).mint(issuer, 10000 * 10 ** 18);
+        GenericToken(genericTokenAddress).mint(investor, 10_000 * 10 ** 18);
+        GenericToken(genericTokenAddress).mint(issuer, 10_000 * 10 ** 18);
         vm.stopPrank();
         vm.startPrank(investor);
         BondFacet(diamondAddress).withdrawBondsPurchased("bp1", 1, investor);
@@ -655,7 +566,6 @@ contract DiamondBondTest is Test {
         GenericToken(genericTokenAddress).approve(diamondAddress, UINT256_MAX);
         vm.prank(issuer);
         CouponFacet(diamondAddress).withdrawCouponClaim(1, investor);
-
     }
 
     function testWithdrawCouponBeforeAllClaimsReceived() public {
@@ -669,9 +579,9 @@ contract DiamondBondTest is Test {
         vm.stopPrank();
         vm.startPrank(owner);
         BondFacet(diamondAddress).issueBond(1, 0);
-        GenericToken(genericTokenAddress).mint(investor, 10000 * 10 ** 18);
-        GenericToken(genericTokenAddress).mint(investor2, 10000 * 10 ** 18);
-        GenericToken(genericTokenAddress).mint(issuer, 10000 * 10 ** 18);
+        GenericToken(genericTokenAddress).mint(investor, 10_000 * 10 ** 18);
+        GenericToken(genericTokenAddress).mint(investor2, 10_000 * 10 ** 18);
+        GenericToken(genericTokenAddress).mint(issuer, 10_000 * 10 ** 18);
         BondFacet(diamondAddress).withdrawBondsPurchased("bp1", 1, investor);
         BondFacet(diamondAddress).withdrawBondsPurchased("bp2", 1, investor2);
         CouponFacet(diamondAddress).claimCoupon(1, investor);
@@ -695,8 +605,7 @@ contract DiamondBondTest is Test {
         vm.prank(owner);
         bytes4[] memory diamondSelectors;
         bytes4[] memory facetSelectors;
-        diamondSelectors = DiamondLoupeFacet(diamondAddress)
-            .facetFunctionSelectors(erc1155FacetAddress);
+        diamondSelectors = DiamondLoupeFacet(diamondAddress).facetFunctionSelectors(erc1155FacetAddress);
         facetSelectors = ERC1155Facet(erc1155FacetAddress).getSelectors();
         assertEq(diamondSelectors[0], facetSelectors[0]);
     }
@@ -706,9 +615,7 @@ contract DiamondBondTest is Test {
             facetAddress: erc1155FacetAddress,
             functionSelectors: ERC1155Facet(erc1155FacetAddress).getSelectors()
         });
-        IDiamondLoupe.Facet[] memory diamondFacets = DiamondLoupeFacet(
-            diamondAddress
-        ).facets();
+        IDiamondLoupe.Facet[] memory diamondFacets = DiamondLoupeFacet(diamondAddress).facets();
 
         assertEq(facet.facetAddress, diamondFacets[0].facetAddress);
     }
@@ -718,19 +625,14 @@ contract DiamondBondTest is Test {
         bytes4[] memory facetSelectors;
         address facetAddress;
         facetSelectors = ERC1155Facet(erc1155FacetAddress).getSelectors();
-        facetAddress = DiamondLoupeFacet(diamondAddress).facetAddress(
-            facetSelectors[4]
-        );
+        facetAddress = DiamondLoupeFacet(diamondAddress).facetAddress(facetSelectors[4]);
         assertEq(facetAddress, erc1155FacetAddress);
     }
 
     function testFacetLoupeSupportsInterface() public view {
         bytes4 interfaceIdERC165 = type(IERC165).interfaceId;
         assertTrue(
-            DiamondLoupeFacet(diamondAddress).supportsInterface(
-                interfaceIdERC165
-            ),
-            "Should support IERC165 interface"
+            DiamondLoupeFacet(diamondAddress).supportsInterface(interfaceIdERC165), "Should support IERC165 interface"
         );
     }
 
@@ -740,13 +642,8 @@ contract DiamondBondTest is Test {
 
     function testFallback() public {
         bytes memory data = abi.encodeWithSignature("nonExistentFunction()");
-        (bool success, ) = address(diamondAddress).call(
-            data
-        );
-        assertFalse(
-            success,
-            "Fallback should revert for non-existent function"
-        );
+        (bool success,) = address(diamondAddress).call(data);
+        assertFalse(success, "Fallback should revert for non-existent function");
     }
 
     function testTransferBond() public {
@@ -756,63 +653,30 @@ contract DiamondBondTest is Test {
         uint256 bondId = 1;
         uint256 coupure = 1000;
         vm.startPrank(owner);
-        GenericToken(genericTokenAddress).mint(
-            investor2,
-            transferAmount * coupure
-        );
-        GenericToken(genericTokenAddress).mint(
-            investor,
-            initialAmount * coupure
-        );
+        GenericToken(genericTokenAddress).mint(investor2, transferAmount * coupure);
+        GenericToken(genericTokenAddress).mint(investor, initialAmount * coupure);
         vm.stopPrank();
         vm.startPrank(investor);
-        GenericToken(genericTokenAddress).approve(
-            diamondAddress,
-            initialAmount * coupure
-        );
-        BondFacet(diamondAddress).reserve(
-            "bondPurchaseId",
-            bondId,
-            initialAmount,
-            investor
-        );
+        GenericToken(genericTokenAddress).approve(diamondAddress, initialAmount * coupure);
+        BondFacet(diamondAddress).reserve("bondPurchaseId", bondId, initialAmount, investor);
         vm.stopPrank();
         vm.startPrank(owner);
         BondFacet(diamondAddress).issueBond(bondId, 0);
-        BondFacet(diamondAddress).withdrawBondsPurchased(
-            "bondPurchaseId",
-            bondId,
-            investor
-        );
+        BondFacet(diamondAddress).withdrawBondsPurchased("bondPurchaseId", bondId, investor);
 
         vm.stopPrank();
         vm.prank(investor2);
-        GenericToken(genericTokenAddress).approve(
-            diamondAddress,
-            transferAmount * coupure
-        );
+        GenericToken(genericTokenAddress).approve(diamondAddress, transferAmount * coupure);
 
         // Transfer the bond
         vm.prank(investor);
         ERC1155Facet(diamondAddress).setApprovalForAll(diamondAddress, true);
         vm.prank(owner);
-        BondFacet(diamondAddress).transferBond(
-            "transfer1",
-            bondId,
-            investor,
-            investor2,
-            transferAmount
-        );
+        BondFacet(diamondAddress).transferBond("transfer1", bondId, investor, investor2, transferAmount);
 
         // Check balances
-        assertEq(
-            ERC1155Facet(diamondAddress).balanceOf(investor, bondId),
-            initialAmount - transferAmount
-        );
-        assertEq(
-            ERC1155Facet(diamondAddress).balanceOf(investor2, bondId),
-            transferAmount
-        );
+        assertEq(ERC1155Facet(diamondAddress).balanceOf(investor, bondId), initialAmount - transferAmount);
+        assertEq(ERC1155Facet(diamondAddress).balanceOf(investor2, bondId), transferAmount);
     }
 
     function testTerminateBond() public {

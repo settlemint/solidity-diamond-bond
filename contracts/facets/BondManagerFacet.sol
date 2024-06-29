@@ -1,38 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {ERC1155Facet} from "./ERC1155Facet.sol";
 import "@prb/math/src/UD60x18.sol";
-import {BokkyPooBahsDateTimeLibrary} from "../libraries/BokkyPooBahsDateTimeLibrary.sol";
-import {BondInitParams} from "../libraries/StructBondInit.sol";
-import {BondStorage} from "./BondStorage.sol";
-
+import { BondStorage } from "./BondStorage.sol";
 
 contract BondManagerFacet is BondStorage {
-  event BondTerminated(uint256 bondId);
-  event Cancelled(uint256 bondId);
+    event BondTerminated(uint256 bondId);
+    event Cancelled(uint256 bondId);
 
-
-  function terminate(uint256 _bondId) external {
+    function terminate(uint256 _bondId) external {
         BondParams storage _bondDetails = bondStorage(_bondId);
         _bondDetails.__status = BondStatus.Terminated;
         emit BondTerminated(_bondId);
     }
 
-  function cancel(uint256 _bondId) external {
+    function cancel(uint256 _bondId) external {
         BondParams storage _bondDetails = bondStorage(_bondId);
 
         //BondDetails storage _bondDetails = __bondDetails[_bondId];
         _bondDetails.__cancelled = true;
         //_bondDetails2.__cancelled = true;
         emit Cancelled(_bondId);
-  }
+    }
 
-  function getSelectors() external pure returns (bytes4[] memory) {
+    function getSelectors() external pure returns (bytes4[] memory) {
         bytes4[] memory selectors = new bytes4[](2);
         selectors[0] = BondManagerFacet.terminate.selector;
         selectors[1] = BondManagerFacet.cancel.selector;
         return selectors;
     }
-
 }

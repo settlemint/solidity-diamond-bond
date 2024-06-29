@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 import "../contracts/DiamondTestContract.sol";
-import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
+import { IDiamondCut } from "../contracts/interfaces/IDiamondCut.sol";
 import "../contracts/interfaces/IDiamond.sol";
 
 contract DiamondTest is Test {
@@ -24,11 +24,7 @@ contract DiamondTest is Test {
 
     function testSetContractOwner() public {
         diamondTest.setContractOwner(newOwner);
-        assertEq(
-            diamondTest.contractOwner(),
-            newOwner,
-            "Contract owner should be newOwner"
-        );
+        assertEq(diamondTest.contractOwner(), newOwner, "Contract owner should be newOwner");
     }
 
     function testEnforceIsContractOwner() public {
@@ -42,9 +38,7 @@ contract DiamondTest is Test {
 
     function testDiamondCut() public {
         // Create a mock facet cut
-        IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](
-            1
-        );
+        IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](1);
         diamondCut[0] = IDiamond.FacetCut({
             facetAddress: address(this),
             action: IDiamond.FacetCutAction.Add,
@@ -59,8 +53,7 @@ contract DiamondTest is Test {
 
     function testDiamondCutDelete() public {
         // First, add a function to replace
-        IDiamondCut.FacetCut[]
-            memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
         diamondCutAdd[0] = IDiamond.FacetCut({
             facetAddress: address(this),
             action: IDiamond.FacetCutAction.Add,
@@ -72,8 +65,7 @@ contract DiamondTest is Test {
         diamondTest.diamondCut(diamondCutAdd, address(0), "");
 
         // Now, replace the function
-        IDiamondCut.FacetCut[]
-            memory diamondCutDelete = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutDelete = new IDiamondCut.FacetCut[](1);
         diamondCutDelete[0] = IDiamond.FacetCut({
             facetAddress: address(0),
             action: IDiamond.FacetCutAction.Remove,
@@ -87,8 +79,7 @@ contract DiamondTest is Test {
 
     function testDeleteFunctionThatDoesNotExist() public {
         // First, add a function to replace
-        IDiamondCut.FacetCut[]
-            memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
         diamondCutAdd[0] = IDiamond.FacetCut({
             facetAddress: address(this),
             action: IDiamond.FacetCutAction.Add,
@@ -100,16 +91,13 @@ contract DiamondTest is Test {
         diamondTest.diamondCut(diamondCutAdd, address(0), "");
 
         // Now, replace the function
-        IDiamondCut.FacetCut[]
-            memory diamondCutDelete = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutDelete = new IDiamondCut.FacetCut[](1);
         diamondCutDelete[0] = IDiamond.FacetCut({
             facetAddress: address(0),
             action: IDiamond.FacetCutAction.Remove,
             functionSelectors: new bytes4[](1)
         });
-        diamondCutDelete[0].functionSelectors[0] = this
-            .invalidFunction
-            .selector;
+        diamondCutDelete[0].functionSelectors[0] = this.invalidFunction.selector;
 
         vm.prank(owner);
         vm.expectRevert();
@@ -118,8 +106,7 @@ contract DiamondTest is Test {
 
     function testDiamondCutReplace() public {
         // First, add a function to replace
-        IDiamondCut.FacetCut[]
-            memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
         diamondCutAdd[0] = IDiamond.FacetCut({
             facetAddress: address(this),
             action: IDiamond.FacetCutAction.Add,
@@ -131,8 +118,7 @@ contract DiamondTest is Test {
         diamondTest.diamondCut(diamondCutAdd, address(0), "");
 
         // Now, replace the function
-        IDiamondCut.FacetCut[]
-            memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
         diamondCutReplace[0] = IDiamond.FacetCut({
             facetAddress: address(secondFacet),
             action: IDiamond.FacetCutAction.Replace,
@@ -147,8 +133,7 @@ contract DiamondTest is Test {
 
     function testDiamondCutReplaceWithEmptyFacet() public {
         // First, add a function to replace
-        IDiamondCut.FacetCut[]
-            memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
         diamondCutAdd[0] = IDiamond.FacetCut({
             facetAddress: address(this),
             action: IDiamond.FacetCutAction.Add,
@@ -160,8 +145,7 @@ contract DiamondTest is Test {
         diamondTest.diamondCut(diamondCutAdd, address(0), "");
 
         // Now, replace the function
-        IDiamondCut.FacetCut[]
-            memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
         diamondCutReplace[0] = IDiamond.FacetCut({
             facetAddress: address(1234),
             action: IDiamond.FacetCutAction.Replace,
@@ -176,8 +160,7 @@ contract DiamondTest is Test {
 
     function testDiamondCutReplaceSameFacet() public {
         // First, add a function to replace
-        IDiamondCut.FacetCut[]
-            memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutAdd = new IDiamondCut.FacetCut[](1);
         diamondCutAdd[0] = IDiamond.FacetCut({
             facetAddress: address(this),
             action: IDiamond.FacetCutAction.Add,
@@ -189,8 +172,7 @@ contract DiamondTest is Test {
         diamondTest.diamondCut(diamondCutAdd, address(0), "");
 
         // Now, replace the function
-        IDiamondCut.FacetCut[]
-            memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory diamondCutReplace = new IDiamondCut.FacetCut[](1);
         diamondCutReplace[0] = IDiamond.FacetCut({
             facetAddress: address(this),
             action: IDiamond.FacetCutAction.Replace,
@@ -205,9 +187,7 @@ contract DiamondTest is Test {
 
     function testDiamondCutWithInitialization() public {
         // Create a mock facet cut
-        IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](
-            1
-        );
+        IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](1);
         diamondCut[0] = IDiamond.FacetCut({
             facetAddress: address(this),
             action: IDiamond.FacetCutAction.Add,
@@ -220,11 +200,7 @@ contract DiamondTest is Test {
 
         // Perform the diamond cut with initialization
         vm.prank(owner);
-        diamondTest.diamondCut(
-            diamondCut,
-            address(mockInitialization),
-            initCalldata
-        );
+        diamondTest.diamondCut(diamondCut, address(mockInitialization), initCalldata);
     }
 
     function validFunction() external pure returns (string memory) {

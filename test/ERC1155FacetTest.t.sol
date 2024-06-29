@@ -51,7 +51,7 @@ contract ERC1155FacetTest is Test {
         uint256 amount = 100;
 
         vm.prank(owner);
-        erc1155.mint(user1, tokenId, amount,"");
+        erc1155.mint(user1, tokenId, amount, "");
 
         vm.prank(user1);
         erc1155.safeTransferFrom(user1, user2, tokenId, amount, "");
@@ -71,8 +71,8 @@ contract ERC1155FacetTest is Test {
         amounts[1] = 200;
 
         vm.startPrank(owner);
-        erc1155.mint(user1, tokenIds[0], amounts[0],"");
-        erc1155.mint(user1, tokenIds[1], amounts[1],"");
+        erc1155.mint(user1, tokenIds[0], amounts[0], "");
+        erc1155.mint(user1, tokenIds[1], amounts[1], "");
         vm.stopPrank();
 
         vm.prank(user1);
@@ -105,8 +105,8 @@ contract ERC1155FacetTest is Test {
 
         vm.startPrank(owner);
         erc1155.mint(owner, tokenId1, 100, "");
-        erc1155.mint(user1, tokenId1, 50,"");
-        erc1155.mint(user2, tokenId2, 200,"");
+        erc1155.mint(user1, tokenId1, 50, "");
+        erc1155.mint(user2, tokenId2, 200, "");
         vm.stopPrank();
 
         accounts[0] = owner;
@@ -119,17 +119,9 @@ contract ERC1155FacetTest is Test {
 
         uint256[] memory balances = erc1155.balanceOfBatch(accounts, ids);
 
-        assertEq(
-            balances[0],
-            100,
-            "Balance of owner for tokenId1 should be 100"
-        );
+        assertEq(balances[0], 100, "Balance of owner for tokenId1 should be 100");
         assertEq(balances[1], 50, "Balance of user1 for tokenId1 should be 50");
-        assertEq(
-            balances[2],
-            200,
-            "Balance of user2 for tokenId2 should be 200"
-        );
+        assertEq(balances[2], 200, "Balance of user2 for tokenId2 should be 200");
     }
 
     function testSupportsInterface() public view {
@@ -140,17 +132,8 @@ contract ERC1155FacetTest is Test {
         // ERC165 Interface ID for non-supported interface (example)
         bytes4 interfaceIdNonSupported = 0xffffffff;
 
-        assertTrue(
-            erc1155.supportsInterface(interfaceIdERC165),
-            "Should support IERC165 interface"
-        );
-        assertTrue(
-            erc1155.supportsInterface(interfaceIdERC1155v2),
-            "Should support IERC1155v2 interface"
-        );
-        assertFalse(
-            erc1155.supportsInterface(interfaceIdNonSupported),
-            "Should not support non-supported interface"
-        );
+        assertTrue(erc1155.supportsInterface(interfaceIdERC165), "Should support IERC165 interface");
+        assertTrue(erc1155.supportsInterface(interfaceIdERC1155v2), "Should support IERC1155v2 interface");
+        assertFalse(erc1155.supportsInterface(interfaceIdNonSupported), "Should not support non-supported interface");
     }
 }
