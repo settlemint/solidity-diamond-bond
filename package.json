@@ -1,14 +1,39 @@
 {
-  "name": "solidity-erc20-metatx",
+  "name": "@settlemint/solidity-diamond-bond",
+  "description": "Smart contract set to build an enterprise bond usecase in SettleMint",
   "version": "7.0.0",
-  "description": "Solidity ERC20 with Meta tx",
+  "private": false,
+  "license": "FSL-1.1-MIT",
+  "author": {
+    "name": "SettleMint",
+    "email": "support@settlemint.com",
+    "url": "https://settlemint.com"
+  },
+  "homepage": "https://github.com/settlemint/solidity-diamond-bond/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/settlemint/solidity-diamond-bond.git"
+  },
+  "bugs": {
+    "url": "https://github.com/settlemint/solidity-diamond-bond/issues",
+    "email": "support@settlemint.com"
+  },
   "keywords": [
     "solidity",
-    "subgraph"
+    "subgraph",
+    "blockchain-transformation",
+    "bond"
   ],
-  "author": "SettleMint <hello@settlemint.com>",
-  "license": "MIT",
-  "devDependencies": {
+  "files": [
+    "/contracts",
+    "/ignition",
+    "/lib",
+    "/subgraph",
+    "/test",
+    "/out",
+    "/artifacts"
+  ],
+  "dependencies": {
     "@amxx/graphprotocol-utils": "1.1.0",
     "@graphprotocol/graph-cli": "0.80.0",
     "@graphprotocol/graph-ts": "0.35.1",
@@ -19,13 +44,11 @@
     "@openzeppelin/contracts": "5.0.2",
     "@openzeppelin/subgraphs": "0.1.8-5",
     "hardhat": "2.22.8",
-    "solhint": "5.0.3"
+    "solhint": "5.0.3",
+    "@prb/math": "4.0.3"
   },
   "overrides": {
     "@graphprotocol/graph-cli": "0.80.0",
     "@graphprotocol/graph-ts": "0.35.1"
-  },
-  "dependencies": {
-    "@prb/math": "4.0.3"
   }
 }

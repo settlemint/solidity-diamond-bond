@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity >=0.6.0 <0.9.0;
 
 // ----------------------------------------------------------------------------
