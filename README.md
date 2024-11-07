@@ -21,7 +21,7 @@ forge init my-project --template settlemint/solidity-diamond-bond
 Or if you want to use this set as a dependency of your own,
 
 ```shell
-npm install @settlemint/solidity-diamond-bond
+bun install @settlemint/solidity-diamond-bond
 ```
 
 ## DX: Foundry & Hardhat hybrid
