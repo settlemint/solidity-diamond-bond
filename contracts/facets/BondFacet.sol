@@ -183,7 +183,7 @@ contract BondFacet is BondStorage, OwnershipFacet, IERC1155Receiver, ERC165 {
                 }
             } else if (_bondDetails.__periodicity == Periodicity.Quarterly) {
                 if (i == 0) {
-                    if (month >= 10) {
+                    if (month >= 11) {
                         couponYear = year + 1;
                     } else {
                         couponYear = year;
@@ -203,7 +203,7 @@ contract BondFacet is BondStorage, OwnershipFacet, IERC1155Receiver, ERC165 {
                 }
             } else if (_bondDetails.__periodicity == Periodicity.Annual) {
                 if (i == 0) {
-                    couponYear = year + 1;
+                    couponYear = year;
                     couponMonth = month;
                 } else {
                     couponYear = couponYear + 1;
