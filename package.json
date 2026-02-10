@@ -45,7 +45,7 @@
     "@openzeppelin/subgraphs": "0.1.8-5",
     "hardhat": "2.27.1",
     "solhint": "6.0.1",
-    "@prb/math": "4.1.0"
+    "@prb/math": "4.1.1"
   },
   "overrides": {
     "@graphprotocol/graph-cli": "0.96.0",
